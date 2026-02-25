@@ -4,7 +4,6 @@
   "main": "db.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
     "start": "node server.js"
   },
   "keywords": [],
@@ -21,6 +20,6 @@
     "multer": "^2.0.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.14"
   }
 }

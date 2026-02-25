@@ -21,7 +21,10 @@ function Register() {
     try {
       await API.post("/auth/register", form);
       alert("Registration Successful");
-      navigate("/");
+
+      // After register go to login page
+      navigate("/login");
+
     } catch (err) {
       alert("Error registering");
     }
@@ -35,32 +38,52 @@ function Register() {
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
 
-        <input name="name" placeholder="Name"
+        <input
+          name="name"
+          placeholder="Name"
           className="w-full border p-2 mb-3 rounded"
-          onChange={handleChange} />
+          onChange={handleChange}
+          required
+        />
 
-        <input name="email" placeholder="Email"
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
           className="w-full border p-2 mb-3 rounded"
-          onChange={handleChange} />
+          onChange={handleChange}
+          required
+        />
 
-        <input name="password" type="password" placeholder="Password"
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
           className="w-full border p-2 mb-3 rounded"
-          onChange={handleChange} />
+          onChange={handleChange}
+          required
+        />
 
-        <select name="role"
+        <select
+          name="role"
           className="w-full border p-2 mb-3 rounded"
-          onChange={handleChange}>
+          onChange={handleChange}
+          value={form.role}
+        >
           <option value="student">Student</option>
           <option value="warden">Warden</option>
           <option value="admin">Admin</option>
         </select>
 
-        <button className="w-full bg-blue-500 text-white p-2 rounded">
+        <button className="w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded font-semibold">
           Register
         </button>
 
         <p className="text-center mt-3">
-          Already have account? <Link to="/" className="text-blue-500">Login</Link>
+          Already have account?{" "}
+          <Link to="/login" className="text-blue-500 font-semibold">
+            Login
+          </Link>
         </p>
       </form>
     </div>
