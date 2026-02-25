@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../utils/axios";
+import DashboardLayout from "../components/DashboardLayout";
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -24,15 +25,13 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen">
-
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+    <DashboardLayout role="admin">
 
       {/* USERS */}
       <h2 className="text-2xl font-semibold mb-4">All Users</h2>
 
       {users.map((u) => (
-        <div key={u._id} className="bg-white p-4 rounded shadow mb-3 flex justify-between">
+        <div key={u._id} className="bg-white p-4 rounded-xl shadow mb-3 flex justify-between items-center">
           <div>
             <p className="font-semibold">{u.name}</p>
             <p>{u.email}</p>
@@ -42,7 +41,7 @@ function AdminDashboard() {
           {u.role === "student" && !u.isBlocked && (
             <button
               onClick={() => blockUser(u._id)}
-              className="bg-red-500 text-white px-3 py-1 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
             >
               Block
             </button>
@@ -58,7 +57,7 @@ function AdminDashboard() {
       <h2 className="text-2xl font-semibold mt-10 mb-4">All Complaints</h2>
 
       {complaints.map((c) => (
-        <div key={c._id} className="bg-white p-4 rounded shadow mb-4">
+        <div key={c._id} className="bg-white p-4 rounded-xl shadow mb-4">
           <p className="font-bold">{c.title}</p>
           <p>{c.description}</p>
 
@@ -78,7 +77,7 @@ function AdminDashboard() {
         </div>
       ))}
 
-    </div>
+    </DashboardLayout>
   );
 }
 

@@ -1,17 +1,38 @@
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import API from "../utils/axios";
 
 function ProtectedRoute({ children, role }) {
+  const [allowed, setAllowed] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const userRole = localStorage.getItem("role");
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const res = await API.get("/profile");
 
-  // not logged in
-  if (!token) {
-    return <Navigate to="/login" replace />;
+        // check real role from backend
+        if (res.data.role === role) {
+          setAllowed(true);
+        } else {
+          setAllowed(false);
+        }
+      } catch (err) {
+        setAllowed(false);
+      }
+    };
+
+    checkUser();
+  }, [role]);
+
+  if (allowed === null) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-xl">
+        Checking authentication...
+      </div>
+    );
   }
 
-  // wrong role trying to access another dashboard
-  if (role && userRole !== role) {
+  if (!allowed) {
     return <Navigate to="/login" replace />;
   }
 

@@ -32,7 +32,7 @@ function Login() {
       const res = await API.post("/auth/login", data);
 
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role);
+      
 
       // role based redirect
       if (res.data.role === "student") navigate("/student");

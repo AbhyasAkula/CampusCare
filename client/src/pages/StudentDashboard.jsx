@@ -9,15 +9,59 @@ function StudentDashboard() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [complaints, setComplaints] = useState([]);
+  const [previousComplaints, setPreviousComplaints] = useState([]); // ⭐ memory for notifications
+  const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   // fetch my complaints
   const loadComplaints = async () => {
-    const res = await API.get("/complaints/my");
-    setComplaints(res.data);
+    try {
+      const res = await API.get("/complaints/my");
+
+      // 🔔 detect resolved complaints
+      res.data.forEach((newComplaint) => {
+        const oldComplaint = previousComplaints.find(
+          (c) => c._id === newComplaint._id
+        );
+
+        if (
+          oldComplaint &&
+          oldComplaint.status !== "Resolved" &&
+          newComplaint.status === "Resolved"
+        ) {
+          alert(`Your complaint "${newComplaint.title}" has been resolved!`);
+        }
+      });
+
+      setPreviousComplaints(res.data);
+      setComplaints(res.data);
+    } catch (err) {
+      console.log("Complaint load failed");
+    }
+  };
+
+  // fetch profile
+  const loadProfile = async () => {
+    try {
+      const res = await API.get("/profile");
+      setUser(res.data);
+    } catch (err) {
+      console.log("Profile load failed");
+    } finally {
+      setLoadingUser(false);
+    }
   };
 
   useEffect(() => {
     loadComplaints();
+    loadProfile();
+
+    // auto refresh complaints every 3 seconds
+    const interval = setInterval(() => {
+      loadComplaints();
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // submit complaint
@@ -36,7 +80,7 @@ function StudentDashboard() {
     setDescription("");
     setImage(null);
 
-    loadComplaints(); // refresh list
+    loadComplaints();
   };
 
   // logout
@@ -47,11 +91,20 @@ function StudentDashboard() {
   };
 
   const statusColor = (status) => {
-    if (status === "pending") return "bg-yellow-100 text-yellow-700";
-    if (status === "progress") return "bg-blue-100 text-blue-700";
-    if (status === "resolved") return "bg-green-100 text-green-700";
+    if (status === "Pending") return "bg-yellow-100 text-yellow-700";
+    if (status === "In Progress") return "bg-blue-100 text-blue-700";
+    if (status === "Resolved") return "bg-green-100 text-green-700";
     return "bg-gray-100 text-gray-700";
   };
+
+  // wait until profile loads
+  if (loadingUser) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-xl font-semibold">
+        Loading dashboard...
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -64,9 +117,9 @@ function StudentDashboard() {
           <li className="font-semibold text-gray-700">Dashboard</li>
           <li className="text-gray-500">My Complaints</li>
           <li>
-              <a href="/profile" className="text-gray-600 hover:text-green-600 font-medium">
-               My Profile
-              </a>
+            <a href="/profile" className="text-gray-600 hover:text-green-600 font-medium">
+              My Profile
+            </a>
           </li>
         </ul>
 
@@ -81,18 +134,36 @@ function StudentDashboard() {
       {/* MAIN CONTENT */}
       <div className="flex-1 p-8">
 
-        {/* NAVBAR */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Student Dashboard</h1>
+        {/* TOP NAVBAR */}
+        <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow">
 
-          <button
-            onClick={async () => {
-              await loadComplaints();
-            }}
-            className="bg-gray-800 text-white px-4 py-2 rounded-lg"
-          >
-            Refresh Complaints
-          </button>
+          <div>
+            <h1 className="text-2xl font-bold">Student Dashboard</h1>
+            <p className="text-gray-600">Welcome, {user?.name}</p>
+          </div>
+
+          <div className="flex items-center gap-4">
+
+            <button
+              onClick={loadComplaints}
+              className="bg-gray-800 text-white px-4 py-2 rounded-lg"
+            >
+              Refresh
+            </button>
+
+            {/* PROFILE AVATAR */}
+            <img
+              onClick={() => navigate("/profile")}
+              src={
+                user?.profilePic
+                  ? `http://localhost:5000/uploads/${user.profilePic}`
+                  : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              }
+              alt="profile"
+              className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 border-green-500"
+            />
+
+          </div>
         </div>
 
         {/* Complaint Form */}
