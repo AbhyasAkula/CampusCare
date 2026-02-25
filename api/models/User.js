@@ -14,6 +14,12 @@ const userSchema = new mongoose.Schema({
   block: String,
   room: String,
   isBlocked: { type: Boolean, default: false },
+
+  // NEW FIELD (profile image)
+  profilePic: {
+    type: String,
+    default: "",
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);

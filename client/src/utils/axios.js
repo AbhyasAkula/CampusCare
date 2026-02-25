@@ -1,4 +1,3 @@
-//axios.js
 import axios from "axios";
 
 const API = axios.create({
@@ -16,5 +15,22 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-export default API;
 
+// 🔐 AUTO LOGOUT IF TOKEN EXPIRED
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // token expired or invalid
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+
+      // redirect to login
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default API;

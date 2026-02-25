@@ -1,6 +1,4 @@
-// Login.jsx
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../utils/axios";
 
@@ -11,6 +9,18 @@ function Login() {
     email: "",
     password: "",
   });
+
+  // 🔹 AUTO REDIRECT IF ALREADY LOGGED IN
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (token && role) {
+      if (role === "student") navigate("/student");
+      if (role === "warden") navigate("/warden");
+      if (role === "admin") navigate("/admin");
+    }
+  }, []);
 
   const handleChange = (e) =>
     setData({ ...data, [e.target.name]: e.target.value });
@@ -42,20 +52,32 @@ function Login() {
       >
         <h2 className="text-2xl font-bold mb-4 text-center">CampusCare Login</h2>
 
-        <input name="email" placeholder="Email"
+        <input
+          name="email"
+          placeholder="Email"
           className="w-full border p-2 mb-3 rounded"
-          onChange={handleChange} />
+          onChange={handleChange}
+          required
+        />
 
-        <input name="password" type="password" placeholder="Password"
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
           className="w-full border p-2 mb-3 rounded"
-          onChange={handleChange} />
+          onChange={handleChange}
+          required
+        />
 
-        <button className="w-full bg-green-500 text-white p-2 rounded mb-2">
+        <button className="w-full bg-green-500 hover:bg-green-600 text-white p-2 rounded mb-2 font-semibold">
           Login
         </button>
 
         <p className="text-center">
-          New user? <Link to="/register" className="text-blue-500">Register</Link>
+          New user?{" "}
+          <Link to="/register" className="text-blue-500 font-semibold">
+            Register
+          </Link>
         </p>
       </form>
     </div>
