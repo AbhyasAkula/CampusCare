@@ -2,11 +2,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
-import StudentDashboard from "./pages/StudentDashboard.jsx";
 import WardenDashboard from "./pages/WardenDashboard.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import Profile from "./pages/Profile.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import StudentHome from "./pages/StudentHome";
+import RaiseTicket from "./pages/RaiseTicket";
+import DashboardLayout from "./components/DashboardLayout";
+import MyComplaints from "./pages/MyComplaints";
 
 function App() {
   return (
@@ -19,23 +22,29 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* protected dashboards */}
-        <Route
-          path="/student"
-          element={
-            <ProtectedRoute role="student">
-              <StudentDashboard />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+  path="/student"
+  element={
+    <ProtectedRoute role="student">
+      <DashboardLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<StudentHome />} />
+  <Route path="raise" element={<RaiseTicket />} />
+   <Route path="complaints" element={<MyComplaints />} />
+</Route>
 
-        <Route
-          path="/warden"
-          element={
-            <ProtectedRoute role="warden">
-              <WardenDashboard />
-            </ProtectedRoute>
-          }
-        />
+      <Route
+  path="/warden"
+  element={
+    <ProtectedRoute role="warden">
+      <DashboardLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<WardenDashboard />} />
+</Route>  
 
         <Route
           path="/admin"

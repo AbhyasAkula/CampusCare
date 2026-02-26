@@ -1,26 +1,22 @@
 import { useEffect, useState } from "react";
 import API from "../utils/axios";
-import DashboardLayout from "../components/DashboardLayout";
 
 function WardenDashboard() {
   const [complaints, setComplaints] = useState([]);
-  const [statusMap, setStatusMap] = useState({}); // keeps dropdown values
+  const [statusMap, setStatusMap] = useState({});
 
   // load complaints
   const loadComplaints = async () => {
     const res = await API.get("/warden");
     setComplaints(res.data);
 
-    // only initialize new complaints (do NOT overwrite existing selections)
     setStatusMap((prev) => {
       const updated = { ...prev };
-
       res.data.forEach((c) => {
         if (!updated[c._id]) {
           updated[c._id] = c.status;
         }
       });
-
       return updated;
     });
   };
@@ -29,7 +25,7 @@ function WardenDashboard() {
     loadComplaints();
   }, []);
 
-  // update status (optimistic UI)
+  // update status
   const updateStatus = async (id, reply = "") => {
     const selectedStatus = statusMap[id];
 
@@ -38,7 +34,6 @@ function WardenDashboard() {
       reply: reply,
     });
 
-    // update UI immediately without waiting reload
     setComplaints((prev) =>
       prev.map((c) =>
         c._id === id
@@ -49,7 +44,9 @@ function WardenDashboard() {
   };
 
   return (
-    <DashboardLayout role="warden">
+    <div>
+
+      <h2 className="text-2xl font-semibold mb-6">All Student Complaints</h2>
 
       {complaints.map((c) => (
         <div key={c._id} className="bg-white p-5 rounded-xl shadow mb-6">
@@ -71,7 +68,6 @@ function WardenDashboard() {
             />
           )}
 
-          {/* STATUS DROPDOWN */}
           <select
             className="border p-2 rounded mr-3"
             value={statusMap[c._id] || c.status}
@@ -87,7 +83,6 @@ function WardenDashboard() {
             <option value="Resolved">Resolved</option>
           </select>
 
-          {/* APPLY STATUS BUTTON */}
           <button
             onClick={() => updateStatus(c._id)}
             className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded mr-3"
@@ -95,7 +90,6 @@ function WardenDashboard() {
             Update Status
           </button>
 
-          {/* Reply */}
           <button
             onClick={() => {
               const reply = prompt("Enter reply for student:");
@@ -114,7 +108,7 @@ function WardenDashboard() {
         </div>
       ))}
 
-    </DashboardLayout>
+    </div>
   );
 }
 

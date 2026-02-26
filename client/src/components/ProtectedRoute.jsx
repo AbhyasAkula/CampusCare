@@ -3,39 +3,56 @@ import { Navigate } from "react-router-dom";
 import API from "../utils/axios";
 
 function ProtectedRoute({ children, role }) {
-  const [allowed, setAllowed] = useState(null);
+  const [status, setStatus] = useState("checking");
+  // checking | allowed | unauthorized | forbidden
 
   useEffect(() => {
     const checkUser = async () => {
       try {
         const res = await API.get("/profile");
 
-        // check real role from backend
+        // USER IS LOGGED IN
+
+        // case 1: page does NOT require specific role (like profile page)
+        if (!role) {
+          setStatus("allowed");
+          return;
+        }
+
+        // case 2: page requires role
         if (res.data.role === role) {
-          setAllowed(true);
+          setStatus("allowed");
         } else {
-          setAllowed(false);
+          setStatus("forbidden");
         }
       } catch (err) {
-        setAllowed(false);
+        setStatus("unauthorized");
       }
     };
 
     checkUser();
   }, [role]);
 
-  if (allowed === null) {
+  // Loading screen
+  if (status === "checking") {
     return (
       <div className="flex items-center justify-center min-h-screen text-xl">
-        Checking authentication...
+        Verifying session...
       </div>
     );
   }
 
-  if (!allowed) {
+  // Not logged in (token invalid / expired)
+  if (status === "unauthorized") {
     return <Navigate to="/login" replace />;
   }
 
+  // Logged in but wrong role
+  if (status === "forbidden") {
+    return <Navigate to="/" replace />;
+  }
+
+  // Allowed
   return children;
 }
 

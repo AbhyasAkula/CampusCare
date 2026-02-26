@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Link } from "react-router-dom";
 import API from "../utils/axios";
 
-function DashboardLayout({ children, role }) {
+function DashboardLayout() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
+  // load logged in user
   const loadProfile = async () => {
     try {
       const res = await API.get("/profile");
       setUser(res.data);
-    } catch {
-      navigate("/login");
+    } catch (err) {
+      console.log("Profile load failed");
     }
   };
 
@@ -40,34 +41,72 @@ function DashboardLayout({ children, role }) {
       <div className="w-64 bg-white shadow-lg p-5">
         <h2 className="text-2xl font-bold text-green-600 mb-8">CampusCare</h2>
 
-        <ul className="space-y-4">
-          <li className="font-semibold text-gray-700">Dashboard</li>
+       <ul className="space-y-4">
 
-          {role === "student" && (
-            <>
-              <li className="text-gray-500">My Complaints</li>
-            </>
-          )}
+  {/* STUDENT MENU */}
+  {user.role === "student" && (
+    <>
+      <li>
+        <Link to="/student" className="text-gray-700 font-semibold hover:text-green-600">
+          Home
+        </Link>
+      </li>
 
-          {role === "warden" && (
-            <>
-              <li className="text-gray-500">Block Complaints</li>
-            </>
-          )}
+      <li>
+        <Link to="/student/raise" className="text-gray-600 hover:text-green-600">
+          Raise a Ticket
+        </Link>
+      </li>
 
-          {role === "admin" && (
-            <>
-              <li className="text-gray-500">Manage Users</li>
-              <li className="text-gray-500">All Complaints</li>
-            </>
-          )}
+      <li>
+        <Link to="/student/complaints" className="text-gray-600 hover:text-green-600">
+          My Complaints
+        </Link>
+      </li>
 
-          <li>
-            <a href="/profile" className="text-gray-600 hover:text-green-600 font-medium">
-              My Profile
-            </a>
-          </li>
-        </ul>
+      <li>
+        <Link to="/profile" className="text-gray-600 hover:text-green-600">
+          My Profile
+        </Link>
+      </li>
+    </>
+  )}
+
+  {/* WARDEN MENU */}
+  {user.role === "warden" && (
+    <>
+      <li>
+        <Link to="/warden" className="text-gray-700 font-semibold hover:text-green-600">
+          All Complaints
+        </Link>
+      </li>
+
+      <li>
+        <Link to="/profile" className="text-gray-600 hover:text-green-600">
+          My Profile
+        </Link>
+      </li>
+    </>
+  )}
+
+  {/* ADMIN MENU (future ready) */}
+  {user.role === "admin" && (
+    <>
+      <li>
+        <Link to="/admin" className="text-gray-700 font-semibold hover:text-green-600">
+          Admin Dashboard
+        </Link>
+      </li>
+
+      <li>
+        <Link to="/profile" className="text-gray-600 hover:text-green-600">
+          My Profile
+        </Link>
+      </li>
+    </>
+  )}
+
+</ul>
 
         <button
           onClick={handleLogout}
@@ -77,16 +116,22 @@ function DashboardLayout({ children, role }) {
         </button>
       </div>
 
-      {/* MAIN AREA */}
+      {/* MAIN CONTENT */}
       <div className="flex-1 p-8">
 
-        {/* NAVBAR */}
+        {/* TOP BAR */}
         <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow">
+
           <div>
-            <h1 className="text-2xl font-bold capitalize">{role} Dashboard</h1>
+            <h1 className="text-2xl font-bold">
+  {user.role === "student" && "Student Panel"}
+  {user.role === "warden" && "Warden Panel"}
+  {user.role === "admin" && "Admin Panel"}
+</h1>
             <p className="text-gray-600">Welcome, {user.name}</p>
           </div>
 
+          {/* PROFILE AVATAR */}
           <img
             onClick={() => navigate("/profile")}
             src={
@@ -99,8 +144,8 @@ function DashboardLayout({ children, role }) {
           />
         </div>
 
-        {/* PAGE CONTENT */}
-        {children}
+        {/* DYNAMIC PAGE CONTENT */}
+        <Outlet />
 
       </div>
     </div>
