@@ -1,29 +1,62 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const Complaint = require("../models/Complaint"); // ⭐ NEW
+const Complaint = require("../models/Complaint");
 const upload = require("../middleware/upload");
 const { protect } = require("../middleware/auth.js");
 
-// GET MY PROFILE + STATS
+// GET MY PROFILE + ROLE BASED STATS
 router.get("/", protect, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
 
-    // 🔢 complaint statistics
-    const totalComplaints = await Complaint.countDocuments({
-      student: req.user.id,
-    });
+    let totalComplaints = 0;
+    let resolvedComplaints = 0;
+    let pendingComplaints = 0;
 
-    const resolvedComplaints = await Complaint.countDocuments({
-      student: req.user.id,
-      status: "Resolved",
-    });
+    // ================= STUDENT =================
+    if (user.role === "student") {
+      totalComplaints = await Complaint.countDocuments({
+        student: req.user.id,
+      });
 
-    const pendingComplaints = await Complaint.countDocuments({
-      student: req.user.id,
-      status: { $ne: "Resolved" },
-    });
+      resolvedComplaints = await Complaint.countDocuments({
+        student: req.user.id,
+        status: "Resolved",
+      });
+
+      pendingComplaints = await Complaint.countDocuments({
+        student: req.user.id,
+        status: { $ne: "Resolved" },
+      });
+    }
+
+    // ================= WARDEN =================
+    else if (user.role === "warden") {
+      // warden manages ALL complaints
+      totalComplaints = await Complaint.countDocuments();
+
+      resolvedComplaints = await Complaint.countDocuments({
+        status: "Resolved",
+      });
+
+      pendingComplaints = await Complaint.countDocuments({
+        status: { $ne: "Resolved" },
+      });
+    }
+
+    // ================= ADMIN (future ready) =================
+    else if (user.role === "admin") {
+      totalComplaints = await Complaint.countDocuments();
+
+      resolvedComplaints = await Complaint.countDocuments({
+        status: "Resolved",
+      });
+
+      pendingComplaints = await Complaint.countDocuments({
+        status: { $ne: "Resolved" },
+      });
+    }
 
     res.json({
       ...user._doc,
@@ -31,6 +64,7 @@ router.get("/", protect, async (req, res) => {
       resolvedComplaints,
       pendingComplaints,
     });
+
   } catch (err) {
     res.status(500).json({ msg: "Profile load error" });
   }
@@ -48,7 +82,11 @@ router.put(
       user.profilePic = req.file.filename;
       await user.save();
 
-      res.json({ msg: "Profile picture updated", profilePic: user.profilePic });
+      res.json({
+        msg: "Profile picture updated",
+        profilePic: user.profilePic,
+      });
+
     } catch (err) {
       res.status(500).json({ msg: "Upload failed" });
     }
