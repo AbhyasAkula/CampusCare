@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../utils/axios";
+import socket from "../utils/socket";
 
 function StudentHome() {
   const [user, setUser] = useState(null);
@@ -12,19 +13,31 @@ function StudentHome() {
     loadProfile();
   }, []);
 
+  // ⭐ correct realtime listener
+  useEffect(() => {
+    const handleUpdate = (data) => {
+      alert(`📢 "${data.title}" status changed to: ${data.status}`);
+    };
+
+    socket.on("complaintUpdated", handleUpdate);
+
+    return () => {
+      socket.off("complaintUpdated", handleUpdate);
+    };
+  }, []);
+
   if (!user) return <div className="p-10">Loading...</div>;
 
   return (
     <div className="p-8">
-
       <h1 className="text-3xl font-bold mb-2">
         Welcome, {user.name} 👋
       </h1>
+
       <p className="text-gray-600 mb-8">
         Here is your hostel complaint overview
       </p>
 
-      {/* Stats cards */}
       <div className="grid md:grid-cols-3 gap-6">
 
         <div className="bg-white p-6 rounded-xl shadow">
@@ -49,7 +62,6 @@ function StudentHome() {
         </div>
 
       </div>
-
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../utils/axios";
+import socket from "../utils/socket";
 
 function MyComplaints() {
   const [complaints, setComplaints] = useState([]);
@@ -9,8 +10,22 @@ function MyComplaints() {
     setComplaints(res.data);
   };
 
+  // initial load
   useEffect(() => {
     loadComplaints();
+  }, []);
+
+  // ⭐ realtime refresh
+  useEffect(() => {
+    const handleUpdate = () => {
+      loadComplaints();
+    };
+
+    socket.on("complaintUpdated", handleUpdate);
+
+    return () => {
+      socket.off("complaintUpdated", handleUpdate);
+    };
   }, []);
 
   const statusColor = (status) => {

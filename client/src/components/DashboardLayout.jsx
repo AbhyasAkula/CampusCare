@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import API from "../utils/axios";
+import socket from "../utils/socket";
 
 function DashboardLayout() {
   const navigate = useNavigate();
@@ -8,13 +9,16 @@ function DashboardLayout() {
 
   // load logged in user
   const loadProfile = async () => {
-    try {
-      const res = await API.get("/profile");
-      setUser(res.data);
-    } catch (err) {
-      console.log("Profile load failed");
-    }
-  };
+  try {
+    const res = await API.get("/profile");
+    setUser(res.data);
+
+    // ⭐ CONNECT SOCKET AFTER AUTH
+  
+  } catch (err) {
+    console.log("Profile load failed");
+  }
+};
 
   useEffect(() => {
     loadProfile();
