@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../utils/axios";
 
@@ -10,18 +10,6 @@ function Login() {
     password: "",
   });
 
-  // 🔹 AUTO REDIRECT IF ALREADY LOGGED IN
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-
-    if (token && role) {
-      if (role === "student") navigate("/student");
-      if (role === "warden") navigate("/warden");
-      if (role === "admin") navigate("/admin");
-    }
-  }, []);
-
   const handleChange = (e) =>
     setData({ ...data, [e.target.name]: e.target.value });
 
@@ -31,10 +19,10 @@ function Login() {
     try {
       const res = await API.post("/auth/login", data);
 
+      // store token
       localStorage.setItem("token", res.data.token);
-      
 
-      // role based redirect
+      // role based redirect AFTER LOGIN ONLY
       if (res.data.role === "student") navigate("/student");
       if (res.data.role === "warden") navigate("/warden");
       if (res.data.role === "admin") navigate("/admin");

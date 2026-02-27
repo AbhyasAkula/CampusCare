@@ -15,20 +15,17 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-
-// 🔐 AUTO LOGOUT IF TOKEN EXPIRED
+// 🔐 HANDLE 401 BUT DO NOT RELOAD THE APP
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    // only remove invalid token
     if (error.response && error.response.status === 401) {
-      // token expired or invalid
       localStorage.removeItem("token");
-      localStorage.removeItem("role");
-
-      // redirect to login
-      window.location.href = "/login";
     }
 
+    // ❗ DO NOT REDIRECT HERE
+    // ProtectedRoute will handle navigation safely
     return Promise.reject(error);
   }
 );
