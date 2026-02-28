@@ -45,6 +45,19 @@ useEffect(() => {
   };
 }, []);
 
+// 🗑 REMOVE NOTICE IN REALTIME
+useEffect(() => {
+  const handleDelete = (id) => {
+    setNotices((prev) => prev.filter((n) => n._id !== id));
+  };
+
+  socket.on("deleteNotice", handleDelete);
+
+  return () => {
+    socket.off("deleteNotice", handleDelete);
+  };
+}, []);
+
   if (!user) return <div className="p-10">Loading...</div>;
 
  return (

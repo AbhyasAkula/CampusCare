@@ -93,4 +93,25 @@ router.get("/notices", protect, async (req, res) => {
   }
 });
 
+// DELETE NOTICE (warden only)
+router.delete("/notice/:id", protect, role("warden"), async (req, res) => {
+  try {
+    const notice = await Notice.findById(req.params.id);
+
+    if (!notice)
+      return res.status(404).json({ msg: "Notice not found" });
+
+    await notice.deleteOne();
+
+    // 🔴 realtime remove for all students
+    const io = req.app.get("io");
+    io.to("students").emit("deleteNotice", req.params.id);
+
+    res.json({ msg: "Notice deleted" });
+
+  } catch (err) {
+    res.status(500).json({ msg: "Delete failed" });
+  }
+});
+
 module.exports = router;

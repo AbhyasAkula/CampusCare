@@ -8,6 +8,7 @@ function WardenDashboard() {
     title: "",
     message: "",
   });
+  const [allNotices, setAllNotices] = useState([]);
 
   // load complaints
   const loadComplaints = async () => {
@@ -27,6 +28,7 @@ function WardenDashboard() {
 
   useEffect(() => {
     loadComplaints();
+    loadNotices();
   }, []);
 
   // update complaint status
@@ -70,6 +72,19 @@ function WardenDashboard() {
     }
   };
 
+const loadNotices = async () => {
+  const res = await API.get("/warden/notices");
+  setAllNotices(res.data);
+};
+
+const deleteNotice = async (id) => {
+  if (!window.confirm("Delete this announcement?")) return;
+
+  await API.delete(`/warden/notice/${id}`);
+
+  setAllNotices((prev) => prev.filter((n) => n._id !== id));
+};
+
   return (
     <div className="space-y-10">
 
@@ -105,6 +120,33 @@ function WardenDashboard() {
           Broadcast Notice
         </button>
       </div>
+
+
+     
+      <div className="bg-white p-6 rounded-xl shadow">
+  <h2 className="text-xl font-semibold mb-4">Posted Announcements</h2>
+
+  {allNotices.length === 0 ? (
+    <p className="text-gray-400">No announcements yet</p>
+  ) : (
+    allNotices.map((n) => (
+      <div key={n._id} className="border-b py-3 flex justify-between items-center">
+        <div>
+          <p className="font-semibold">{n.title}</p>
+          <p className="text-sm text-gray-600">{n.message}</p>
+        </div>
+
+        <button
+          onClick={() => deleteNotice(n._id)}
+          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+        >
+          Delete
+        </button>
+      </div>
+    ))
+  )}
+</div>
+
 
       {/* ===== COMPLAINT SECTION ===== */}
       <h2 className="text-2xl font-semibold mb-6">All Student Complaints</h2>
