@@ -4,6 +4,10 @@ import API from "../utils/axios";
 function WardenDashboard() {
   const [complaints, setComplaints] = useState([]);
   const [statusMap, setStatusMap] = useState({});
+  const [notice, setNotice] = useState({
+    title: "",
+    message: "",
+  });
 
   // load complaints
   const loadComplaints = async () => {
@@ -25,7 +29,7 @@ function WardenDashboard() {
     loadComplaints();
   }, []);
 
-  // update status
+  // update complaint status
   const updateStatus = async (id, reply = "") => {
     const selectedStatus = statusMap[id];
 
@@ -43,9 +47,66 @@ function WardenDashboard() {
     );
   };
 
-  return (
-    <div>
+  // POST HOSTEL ANNOUNCEMENT
+  const postNotice = async () => {
+    if (!notice.title || !notice.message) {
+      alert("Please fill title and message");
+      return;
+    }
 
+    try {
+      await API.post("/warden/notice", notice);
+
+      alert("Notice broadcasted to all students 🚀");
+
+      // clear fields
+      setNotice({
+        title: "",
+        message: "",
+      });
+
+    } catch (err) {
+      alert("Failed to post notice");
+    }
+  };
+
+  return (
+    <div className="space-y-10">
+
+      {/* ===== ANNOUNCEMENT PANEL ===== */}
+      <div className="bg-white p-6 rounded-xl shadow">
+        <h2 className="text-2xl font-semibold mb-4">
+          📢 Post Hostel Announcement
+        </h2>
+
+        <input
+          type="text"
+          placeholder="Notice Title (e.g., Water Supply Maintenance)"
+          value={notice.title}
+          onChange={(e) =>
+            setNotice({ ...notice, title: e.target.value })
+          }
+          className="w-full border p-2 rounded mb-3"
+        />
+
+        <textarea
+          placeholder="Write announcement message for all students..."
+          value={notice.message}
+          onChange={(e) =>
+            setNotice({ ...notice, message: e.target.value })
+          }
+          className="w-full border p-2 rounded mb-3 h-28"
+        />
+
+        <button
+          onClick={postNotice}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded"
+        >
+          Broadcast Notice
+        </button>
+      </div>
+
+      {/* ===== COMPLAINT SECTION ===== */}
       <h2 className="text-2xl font-semibold mb-6">All Student Complaints</h2>
 
       {complaints.map((c) => (

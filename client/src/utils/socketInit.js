@@ -5,13 +5,26 @@ export const initializeSocket = async () => {
   try {
     const res = await API.get("/profile");
 
+    const { _id, role } = res.data;
+
     // connect socket
     socket.connect();
 
-    // join personal room
-    socket.emit("joinRoom", res.data._id);
+    // personal room (already existing)
+    socket.emit("joinRoom", _id);
+    console.log("Joined personal room:", _id);
 
-    console.log("Socket joined room:", res.data._id);
+    // NEW: role based rooms
+    if (role === "student") {
+      socket.emit("joinStudents");
+      console.log("Joined students broadcast room");
+    }
+
+    if (role === "warden") {
+      socket.emit("joinWardens");
+      console.log("Joined wardens room");
+    }
+
   } catch (err) {
     console.log("Socket init failed");
   }

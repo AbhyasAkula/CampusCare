@@ -35,14 +35,27 @@ app.use("/api/warden", require("./routes/warden.routes"));
 app.use("/api/admin", require("./routes/admin.routes"));
 app.use("/api/profile", require("./routes/profile"));
 
-// SOCKET CONNECTION
+/* ================= SOCKET CONNECTION ================= */
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  // student joins their personal room
+  // 1️⃣ personal room (existing complaint updates)
   socket.on("joinRoom", (userId) => {
     socket.join(userId);
-    console.log("Joined room:", userId);
+    console.log("Joined personal room:", userId);
+  });
+
+  // 2️⃣ broadcast room for ALL students
+  socket.on("joinStudents", () => {
+    socket.join("students");
+    console.log("A student joined students broadcast room");
+  });
+
+  // 3️⃣ wardens room (useful for future features)
+  socket.on("joinWardens", () => {
+    socket.join("wardens");
+    console.log("A warden joined wardens room");
   });
 
   socket.on("disconnect", () => {
@@ -50,5 +63,6 @@ io.on("connection", (socket) => {
   });
 });
 
-// start server
+/* ================= START SERVER ================= */
+
 server.listen(5000, () => console.log("Server running on port 5000"));

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Complaint = require("../models/Complaint");
+const Notice = require("../models/Notice");
 const { protect, role } = require("../middleware/auth");
 
 
@@ -47,5 +48,49 @@ if (previousStatus !== complaint.status) {
   }
 });
 
+// POST HOSTEL NOTICE (REALTIME BROADCAST)
+router.post("/notice", protect, role("warden"), async (req, res) => {
+  try {
+    const { title, message } = req.body;
+
+    if (!title || !message)
+      return res.status(400).json({ msg: "Title and message required" });
+
+    // save notice to DB
+   const notice = await Notice.create({
+  title,
+  message,
+  postedBy: req.user._id,
+});
+
+    // 🔴 BROADCAST TO ALL STUDENTS
+    const io = req.app.get("io");
+
+    io.to("students").emit("newNotice", {
+      title: notice.title,
+      message: notice.message,
+      createdAt: notice.createdAt,
+    });
+
+    res.json({ msg: "Notice posted successfully", notice });
+
+  } catch (err) {
+  console.log("NOTICE ERROR:", err);
+  res.status(500).json({ msg: err.message });
+}
+});
+
+// GET ALL NOTICES (students use this)
+router.get("/notices", protect, async (req, res) => {
+  try {
+    const notices = await Notice.find()
+      .sort({ createdAt: -1 })
+      .limit(10); // last 10 announcements
+
+    res.json(notices);
+  } catch (err) {
+    res.status(500).json({ msg: "Failed to fetch notices" });
+  }
+});
 
 module.exports = router;

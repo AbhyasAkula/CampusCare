@@ -18,4 +18,5 @@ const noticeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// ⭐ THIS LINE IS THE FIX
 module.exports = mongoose.model("Notice", noticeSchema);
