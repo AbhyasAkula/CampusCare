@@ -4,170 +4,230 @@ import socket from "../utils/socket";
 import toast from "react-hot-toast";
 
 function StudentHome() {
+
   const [user, setUser] = useState(null);
   const [notices, setNotices] = useState([]);
   const [contacts, setContacts] = useState([]);
 
-  // ⭐ SCROLL FUNCTION
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    progress: 0,
+    resolved: 0
+  });
+
   const scrollToEmergency = () => {
     const section = document.getElementById("emergency-section");
-    if (section) {
-      section.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    if (section) section.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Load profile + notices + emergency contacts
+  const loadInitialData = async () => {
+
+    const profileRes = await API.get("/profile");
+    setUser(profileRes.data);
+
+    const noticeRes = await API.get("/warden/notices");
+    setNotices(noticeRes.data);
+
+    const contactRes = await API.get("/admin/contacts");
+    setContacts(contactRes.data);
+
+    const complaintRes = await API.get("/complaints/my");
+    const complaints = complaintRes.data;
+
+    const pending = complaints.filter(c => c.status === "Pending").length;
+    const progress = complaints.filter(c => c.status === "In Progress").length;
+    const resolved = complaints.filter(c => c.status === "Resolved").length;
+
+    setStats({
+      total: complaints.length,
+      pending,
+      progress,
+      resolved
+    });
+
+  };
+
   useEffect(() => {
-    const loadInitialData = async () => {
-      const profileRes = await API.get("/profile");
-      setUser(profileRes.data);
-
-      const noticeRes = await API.get("/warden/notices");
-      setNotices(noticeRes.data);
-
-      // fetch emergency contacts
-      const contactRes = await API.get("/admin/contacts");
-      setContacts(contactRes.data);
-    };
-
     loadInitialData();
   }, []);
 
-  // Complaint status realtime
   useEffect(() => {
+
     const handleUpdate = (data) => {
       toast.success(`${data.title} → ${data.status}`);
+      loadInitialData();
     };
 
     socket.on("complaintUpdated", handleUpdate);
 
-    return () => {
-      socket.off("complaintUpdated", handleUpdate);
-    };
+    return () => socket.off("complaintUpdated", handleUpdate);
+
   }, []);
 
-  // New notice realtime
   useEffect(() => {
+
     const handleNotice = (notice) => {
-      setNotices((prev) => [notice, ...prev]);
-      toast(`📢 New Announcement: ${notice.title}`, { icon: "📣" });
+      setNotices(prev => [notice, ...prev]);
+      toast(`📢 ${notice.title}`);
     };
 
     socket.on("newNotice", handleNotice);
 
-    return () => {
-      socket.off("newNotice", handleNotice);
-    };
+    return () => socket.off("newNotice", handleNotice);
+
   }, []);
 
-  // Notice delete realtime
   useEffect(() => {
+
     const handleDelete = (id) => {
-      setNotices((prev) => prev.filter((n) => n._id !== id));
+      setNotices(prev => prev.filter(n => n._id !== id));
       toast.error("Announcement removed");
     };
 
     socket.on("deleteNotice", handleDelete);
 
-    return () => {
-      socket.off("deleteNotice", handleDelete);
-    };
+    return () => socket.off("deleteNotice", handleDelete);
+
   }, []);
 
   if (!user) return <div className="p-10">Loading...</div>;
 
   return (
-    <div className="p-8 space-y-8">
 
-      {/* Welcome */}
+    <div className="space-y-8">
+
+      {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-2xl font-semibold">
           Welcome, {user.name} 👋
         </h1>
-        <p className="text-gray-600">IIIT Sri City Hostel Dashboard</p>
+        <p className="text-[#7C8FAC] text-sm">
+          IIIT Sri City Hostel Dashboard
+        </p>
       </div>
 
-      {/* Quick Actions */}
+     
+      {/* QUICK ACTIONS */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         <a
           href="/student/raise"
-          className="bg-blue-500 text-white p-6 rounded-xl shadow hover:scale-105 transition"
+          className="bg-[#5D87FF] text-white p-6 rounded-xl hover:bg-[#4570EA]"
         >
-          <h2 className="text-xl font-semibold">Raise Complaint</h2>
-          <p className="text-sm opacity-90">Report a hostel issue</p>
+          <h2 className="text-lg font-semibold">Raise Complaint</h2>
+          <p className="text-sm opacity-90">
+            Report hostel issues instantly
+          </p>
         </a>
 
         <a
           href="/student/complaints"
-          className="bg-indigo-500 text-white p-6 rounded-xl shadow hover:scale-105 transition"
+          className="bg-[#49BEFF] text-white p-6 rounded-xl"
         >
-          <h2 className="text-xl font-semibold">Track Complaints</h2>
-          <p className="text-sm opacity-90">View your tickets</p>
+          <h2 className="text-lg font-semibold">Track Complaints</h2>
+          <p className="text-sm opacity-90">
+            Monitor complaint progress
+          </p>
         </a>
 
-        {/* ⭐ CLICKABLE EMERGENCY CARD */}
         <div
           onClick={scrollToEmergency}
-          className="bg-red-500 text-white p-6 rounded-xl shadow cursor-pointer hover:scale-105 transition"
+          className="bg-[#FA896B] text-white p-6 rounded-xl cursor-pointer"
         >
-          <h2 className="text-xl font-semibold">Emergency Help</h2>
-          <p className="text-sm">Use numbers below immediately</p>
-          <p className="mt-2 font-bold">⚠️ Available 24/7</p>
+          <h2 className="text-lg font-semibold">Emergency Help</h2>
+          <p className="text-sm">
+            Important hostel contacts
+          </p>
         </div>
 
       </div>
 
-      {/* Notices */}
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="text-xl font-semibold mb-4">📢 Hostel Announcements</h2>
+      {/* ANNOUNCEMENTS */}
+      <div className="bg-white border border-[#E6E9F0] rounded-xl p-6">
 
-        <ul className="space-y-3 text-gray-700">
-          {notices.length === 0 ? (
-            <li className="text-gray-400">No announcements yet</li>
-          ) : (
-            notices.map((n) => (
-              <li key={n._id} className="border-b pb-2">
-                <p className="font-semibold">📢 {n.title}</p>
-                <p className="text-sm">{n.message}</p>
-              </li>
-            ))
+        <h2 className="text-lg font-semibold mb-4">
+          📢 Hostel Announcements
+        </h2>
+
+        <ul className="space-y-3">
+
+          {notices.length === 0 && (
+            <li className="text-gray-400">
+              No announcements yet
+            </li>
           )}
+
+          {notices.map(n => (
+
+            <li key={n._id} className="border-b pb-2">
+
+              <p className="font-medium">
+                📢 {n.title}
+              </p>
+
+              <p className="text-sm text-gray-600">
+                {n.message}
+              </p>
+
+            </li>
+
+          ))}
+
         </ul>
+
       </div>
 
-      {/* ⭐ EMERGENCY CONTACTS SECTION (TARGET) */}
+      {/* EMERGENCY CONTACTS */}
       <div
         id="emergency-section"
-        className="bg-white p-6 rounded-xl shadow scroll-mt-24"
+        className="bg-white border border-[#E6E9F0] rounded-xl p-6"
       >
-        <h2 className="text-xl font-semibold mb-4">🚨 Emergency Contacts</h2>
+
+        <h2 className="text-lg font-semibold mb-4">
+          🚨 Emergency Contacts
+        </h2>
 
         {contacts.length === 0 ? (
-          <p className="text-gray-400">No contacts added by admin yet</p>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-4 text-gray-700">
-            {contacts.map((c) => (
-              <div key={c._id} className="border p-3 rounded-lg">
-                <p className="font-semibold">{c.title}</p>
 
-                {/* clickable phone number (mobile dial support) */}
+          <p className="text-gray-400">
+            No contacts added by admin yet
+          </p>
+
+        ) : (
+
+          <div className="grid md:grid-cols-2 gap-4">
+
+            {contacts.map(c => (
+
+              <div
+                key={c._id}
+                className="border border-[#E6E9F0] rounded-lg p-4"
+              >
+
+                <p className="font-semibold">
+                  {c.title}
+                </p>
+
                 <a
                   href={`tel:${c.phone}`}
-                  className="text-blue-600 font-bold hover:underline"
+                  className="text-[#5D87FF] font-semibold text-sm"
                 >
                   {c.phone}
                 </a>
+
               </div>
+
             ))}
+
           </div>
+
         )}
+
       </div>
 
     </div>
+
   );
 }
 

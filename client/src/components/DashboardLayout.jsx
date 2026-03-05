@@ -1,24 +1,20 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import API from "../utils/axios";
-import socket from "../utils/socket";
 
 function DashboardLayout() {
+
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  // load logged in user
   const loadProfile = async () => {
-  try {
-    const res = await API.get("/profile");
-    setUser(res.data);
-
-    // ⭐ CONNECT SOCKET AFTER AUTH
-  
-  } catch (err) {
-    console.log("Profile load failed");
-  }
-};
+    try {
+      const res = await API.get("/profile");
+      setUser(res.data);
+    } catch {
+      console.log("Profile load failed");
+    }
+  };
 
   useEffect(() => {
     loadProfile();
@@ -39,119 +35,165 @@ function DashboardLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-[#F5F7FB]">
 
       {/* SIDEBAR */}
-      <div className="w-64 bg-white shadow-lg p-5">
-        <h2 className="text-2xl font-bold text-green-600 mb-8">CampusCare</h2>
+      <div className="w-64 bg-white border-r border-[#E6E9F0] p-6 flex flex-col">
 
-       <ul className="space-y-4">
+        {/* LOGO */}
+        <h2 className="text-2xl font-bold text-[#5D87FF] mb-10">
+          CampusCare
+        </h2>
 
-  {/* STUDENT MENU */}
-  {user.role === "student" && (
-    <>
-      <li>
-        <Link to="/student" className="text-gray-700 font-semibold hover:text-green-600">
-          Home
-        </Link>
-      </li>
+        {/* MENU */}
+        <ul className="space-y-2 text-sm flex-1">
 
-      <li>
-        <Link to="/student/raise" className="text-gray-600 hover:text-green-600">
-          Raise a Ticket
-        </Link>
-      </li>
+          {user.role === "student" && (
+            <>
+              <li>
+                <Link
+                  to="/student"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  Home
+                </Link>
+              </li>
 
-      <li>
-        <Link to="/student/complaints" className="text-gray-600 hover:text-green-600">
-          My Complaints
-        </Link>
-      </li>
+              <li>
+                <Link
+                  to="/student/raise"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  Raise Complaint
+                </Link>
+              </li>
 
-      <li>
-        <Link to="/profile" className="text-gray-600 hover:text-green-600">
-          My Profile
-        </Link>
-      </li>
-    </>
-  )}
+              <li>
+                <Link
+                  to="/student/complaints"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  My Complaints
+                </Link>
+              </li>
 
-  {/* WARDEN MENU */}
-  {user.role === "warden" && (
-    <>
-      <li>
-        <Link to="/warden" className="text-gray-700 font-semibold hover:text-green-600">
-          All Complaints
-        </Link>
-      </li>
+              <li>
+                <Link
+                  to="/profile"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  Profile
+                </Link>
+              </li>
+            </>
+          )}
 
-      <li>
-        <Link to="/profile" className="text-gray-600 hover:text-green-600">
-          My Profile
-        </Link>
-      </li>
-    </>
-  )}
+          {user.role === "warden" && (
+            <>
+              <li>
+                <Link
+                  to="/warden"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  Complaints
+                </Link>
+              </li>
 
-  {/* ADMIN MENU (future ready) */}
-  {user.role === "admin" && (
-    <>
-      <li>
-        <Link to="/admin" className="text-gray-700 font-semibold hover:text-green-600">
-          Admin Dashboard
-        </Link>
-      </li>
+              <li>
+                <Link
+                  to="/profile"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  Profile
+                </Link>
+              </li>
+            </>
+          )}
 
-      <li>
-        <Link to="/profile" className="text-gray-600 hover:text-green-600">
-          My Profile
-        </Link>
-      </li>
-    </>
-  )}
+          {user.role === "admin" && (
+            <>
+              <li>
+                <Link
+                  to="/admin"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  Admin Dashboard
+                </Link>
+              </li>
 
-</ul>
+              <li>
+                <Link
+                  to="/profile"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  Profile
+                </Link>
+              </li>
+            </>
+          )}
 
+        </ul>
+
+        {/* LOGOUT */}
         <button
           onClick={handleLogout}
-          className="mt-10 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg"
+          className="mt-6 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm"
         >
           Logout
         </button>
+
       </div>
 
-      {/* MAIN CONTENT */}
-      <div className="flex-1 p-8">
+      {/* MAIN AREA */}
+      <div className="flex-1 flex flex-col">
 
-        {/* TOP BAR */}
-        <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow">
+        {/* NAVBAR */}
+        <div className="h-16 bg-white border-b border-[#E6E9F0] flex items-center justify-between px-6">
 
-          <div>
-            <h1 className="text-2xl font-bold">
-  {user.role === "student" && "Student Panel"}
-  {user.role === "warden" && "Warden Panel"}
-  {user.role === "admin" && "Admin Panel"}
-</h1>
-            <p className="text-gray-600">Welcome, {user.name}</p>
+          {/* SEARCH */}
+          <input
+            type="text"
+            placeholder="Search..."
+            className="bg-gray-100 px-4 py-2 rounded-lg text-sm outline-none w-64"
+          />
+
+          {/* RIGHT SIDE */}
+          <div className="flex items-center gap-5">
+
+            {/* NOTIFICATION ICON */}
+            <div className="relative cursor-pointer">
+
+              <span className="text-xl">🔔</span>
+
+              <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                2
+              </span>
+
+            </div>
+
+            {/* PROFILE */}
+            <img
+              onClick={() => navigate("/profile")}
+              src={
+                user.profilePic
+                  ? `http://localhost:5000/uploads/${user.profilePic}`
+                  : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              }
+              alt="profile"
+              className="w-9 h-9 rounded-full object-cover cursor-pointer"
+            />
+
           </div>
 
-          {/* PROFILE AVATAR */}
-          <img
-            onClick={() => navigate("/profile")}
-            src={
-              user.profilePic
-                ? `http://localhost:5000/uploads/${user.profilePic}`
-                : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-            }
-            alt="profile"
-            className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 border-green-500"
-          />
         </div>
 
-        {/* DYNAMIC PAGE CONTENT */}
-        <Outlet />
+        {/* CONTENT */}
+        <div className="p-8">
+          <Outlet />
+        </div>
 
       </div>
+
     </div>
   );
 }

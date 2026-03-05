@@ -3,6 +3,7 @@ import API from "../utils/axios";
 import socket from "../utils/socket";
 
 function MyComplaints() {
+
   const [complaints, setComplaints] = useState([]);
 
   const loadComplaints = async () => {
@@ -10,57 +11,88 @@ function MyComplaints() {
     setComplaints(res.data);
   };
 
-  // initial load
   useEffect(() => {
     loadComplaints();
   }, []);
 
-  // ⭐ realtime refresh
   useEffect(() => {
+
     const handleUpdate = () => {
       loadComplaints();
     };
 
     socket.on("complaintUpdated", handleUpdate);
 
-    return () => {
-      socket.off("complaintUpdated", handleUpdate);
-    };
+    return () => socket.off("complaintUpdated", handleUpdate);
+
   }, []);
 
   const statusColor = (status) => {
-    if (status === "Pending") return "bg-yellow-100 text-yellow-700";
-    if (status === "In Progress") return "bg-blue-100 text-blue-700";
-    if (status === "Resolved") return "bg-green-100 text-green-700";
+
+    if (status === "Pending")
+      return "bg-[#FFAE1F]/20 text-[#FFAE1F]";
+
+    if (status === "In Progress")
+      return "bg-[#49BEFF]/20 text-[#49BEFF]";
+
+    if (status === "Resolved")
+      return "bg-[#13DEB9]/20 text-[#13DEB9]";
+
     return "bg-gray-100 text-gray-700";
+
   };
 
   return (
+
     <div>
-      <h2 className="text-2xl font-semibold mb-6">My Complaints</h2>
+
+      <h2 className="text-xl font-semibold mb-6">
+        My Complaints
+      </h2>
 
       <div className="grid md:grid-cols-2 gap-6">
+
         {complaints.map((c) => (
-          <div key={c._id} className="bg-white p-5 rounded-xl shadow">
-            <h3 className="text-lg font-bold">{c.title}</h3>
-            <p className="text-gray-600 mt-2">{c.description}</p>
+
+          <div
+            key={c._id}
+            className="bg-white border border-gray-200 rounded-xl p-5"
+          >
+
+            <h3 className="font-semibold">
+              {c.title}
+            </h3>
+
+            <p className="text-gray-600 text-sm mt-2">
+              {c.description}
+            </p>
 
             <div className="mt-3">
-              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColor(c.status)}`}>
+
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor(c.status)}`}
+              >
                 {c.status}
               </span>
+
             </div>
 
             {c.image && (
+
               <img
                 src={`http://localhost:5000/uploads/${c.image}`}
                 alt="complaint"
                 className="mt-4 w-60 rounded-lg border"
               />
+
             )}
+
           </div>
+
         ))}
+
       </div>
+
     </div>
   );
 }

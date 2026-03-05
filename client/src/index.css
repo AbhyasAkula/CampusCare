@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #F5F7FB;
+  color: #2A3547;
+}
+
+/* Smooth UI */
+* {
+  transition: all 0.15s ease;
+}
