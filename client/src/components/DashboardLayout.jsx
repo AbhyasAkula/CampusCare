@@ -48,6 +48,7 @@ function DashboardLayout() {
         {/* MENU */}
         <ul className="space-y-2 text-sm flex-1">
 
+          {/* ================= STUDENT MENU ================= */}
           {user.role === "student" && (
             <>
               <li>
@@ -88,6 +89,7 @@ function DashboardLayout() {
             </>
           )}
 
+          {/* ================= WARDEN MENU ================= */}
           {user.role === "warden" && (
             <>
               <li>
@@ -95,7 +97,25 @@ function DashboardLayout() {
                   to="/warden"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
+                  Home
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/warden/complaints"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
                   Complaints
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/warden/notices"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  Announcements
                 </Link>
               </li>
 
@@ -110,6 +130,7 @@ function DashboardLayout() {
             </>
           )}
 
+          {/* ================= ADMIN MENU ================= */}
           {user.role === "admin" && (
             <>
               <li>
@@ -162,13 +183,11 @@ function DashboardLayout() {
 
             {/* NOTIFICATION ICON */}
             <div className="relative cursor-pointer">
-
               <span className="text-xl">🔔</span>
 
               <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                 2
               </span>
-
             </div>
 
             {/* PROFILE */}

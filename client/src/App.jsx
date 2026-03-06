@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import WardenDashboard from "./pages/WardenDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -11,6 +10,11 @@ import RaiseTicket from "./pages/RaiseTicket";
 import DashboardLayout from "./components/DashboardLayout";
 import MyComplaints from "./pages/MyComplaints";
 import ComplaintChat from "./pages/ComplaintChat";
+
+/* NEW WARDEN PAGES */
+import WardenHome from "./pages/WardenHome";
+import WardenComplaints from "./pages/WardenComplaints";
+import WardenAnnouncements from "./pages/WardenAnnouncements";
 
 function App() {
   return (
@@ -22,6 +26,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        {/* ================= STUDENT ================= */}
         <Route
           path="/student"
           element={
@@ -35,6 +40,7 @@ function App() {
           <Route path="complaints" element={<MyComplaints />} />
         </Route>
 
+        {/* ================= WARDEN ================= */}
         <Route
           path="/warden"
           element={
@@ -43,9 +49,12 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<WardenDashboard />} />
+          <Route index element={<WardenHome />} />
+          <Route path="complaints" element={<WardenComplaints />} />
+          <Route path="notices" element={<WardenAnnouncements />} />
         </Route>
 
+        {/* ================= CHAT ================= */}
         <Route
           path="/complaint/:id/chat"
           element={
@@ -57,6 +66,7 @@ function App() {
           <Route index element={<ComplaintChat />} />
         </Route>
 
+        {/* ================= ADMIN ================= */}
         <Route
           path="/admin"
           element={
@@ -66,6 +76,7 @@ function App() {
           }
         />
 
+        {/* ================= PROFILE ================= */}
         <Route
           path="/profile"
           element={

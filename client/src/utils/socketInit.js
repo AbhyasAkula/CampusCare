@@ -2,23 +2,28 @@ import socket from "./socket";
 import API from "./axios";
 
 export const initializeSocket = async () => {
+
   try {
+
     const res = await API.get("/profile");
 
     const { _id, role } = res.data;
 
-    // connect socket
     socket.connect();
 
-    // personal room (already existing)
+    /* PERSONAL ROOM */
+
     socket.emit("joinRoom", _id);
+
     console.log("Joined personal room:", _id);
 
-    // NEW: role based rooms
+    /* STUDENTS BROADCAST */
+
     if (role === "student") {
       socket.emit("joinStudents");
-      console.log("Joined students broadcast room");
     }
+
+    /* WARDENS ROOM */
 
     if (role === "warden") {
       socket.emit("joinWardens");
@@ -26,6 +31,9 @@ export const initializeSocket = async () => {
     }
 
   } catch (err) {
-    console.log("Socket init failed");
+
+    console.log("Socket init error", err);
+
   }
+
 };
