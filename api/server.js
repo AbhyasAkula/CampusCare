@@ -29,6 +29,7 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 // routes
+app.use("/api/chat", require("./routes/chat.routes"));
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/complaints", require("./routes/complaint.routes"));
 app.use("/api/warden", require("./routes/warden.routes"));
@@ -61,6 +62,13 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
+
+    // complaint chat room
+  socket.on("joinComplaintRoom", (complaintId) => {
+    socket.join(`complaint_${complaintId}`);
+    console.log("Joined complaint room:", complaintId);
+  });
+  
 });
 
 /* ================= START SERVER ================= */

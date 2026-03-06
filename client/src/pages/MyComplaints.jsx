@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../utils/axios";
 import socket from "../utils/socket";
 
 function MyComplaints() {
 
   const [complaints, setComplaints] = useState([]);
+  const navigate = useNavigate();
 
   const loadComplaints = async () => {
-    const res = await API.get("/complaints/my");
-    setComplaints(res.data);
+    try {
+      const res = await API.get("/complaints/my");
+      setComplaints(res.data);
+    } catch (err) {
+      console.error("Failed to load complaints");
+    }
   };
 
   useEffect(() => {
@@ -86,6 +92,15 @@ function MyComplaints() {
               />
 
             )}
+
+            {/* OPEN CHAT BUTTON */}
+
+            <button
+              onClick={() => navigate(`/complaint/${c._id}/chat`)}
+              className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+            >
+              Open Chat
+            </button>
 
           </div>
 
