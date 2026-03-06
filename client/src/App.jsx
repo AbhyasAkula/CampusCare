@@ -1,27 +1,40 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
+
 import ProtectedRoute from "./components/ProtectedRoute";
+import DashboardLayout from "./components/DashboardLayout";
+
+/* STUDENT */
 import StudentHome from "./pages/StudentHome";
 import RaiseTicket from "./pages/RaiseTicket";
-import DashboardLayout from "./components/DashboardLayout";
 import MyComplaints from "./pages/MyComplaints";
-import ComplaintChat from "./pages/ComplaintChat";
 
-/* NEW WARDEN PAGES */
+/* WARDEN */
 import WardenHome from "./pages/WardenHome";
 import WardenComplaints from "./pages/WardenComplaints";
 import WardenAnnouncements from "./pages/WardenAnnouncements";
 
+/* CHAT */
+import ComplaintChat from "./pages/ComplaintChat";
+
+/* ADMIN */
+import AdminDashboard from "./pages/AdminDashboard";
+
+/* (WE WILL CREATE THESE NEXT) */
+import AdminUsers from "./pages/AdminUsers";
+import AdminComplaints from "./pages/AdminComplaints";
+import AdminEmergency from "./pages/AdminEmergency";
+
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
 
+        {/* PUBLIC */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -71,10 +84,15 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute role="admin">
-              <AdminDashboard />
+              <DashboardLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="complaints" element={<AdminComplaints />} />
+          <Route path="emergency" element={<AdminEmergency />} />
+        </Route>
 
         {/* ================= PROFILE ================= */}
         <Route
@@ -87,7 +105,6 @@ function App() {
         />
 
       </Routes>
-
     </BrowserRouter>
   );
 }

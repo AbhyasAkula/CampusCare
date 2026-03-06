@@ -3,7 +3,6 @@ import { Outlet, useNavigate, Link } from "react-router-dom";
 import API from "../utils/axios";
 
 function DashboardLayout() {
-
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -37,7 +36,7 @@ function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-[#F5F7FB]">
 
-      {/* SIDEBAR */}
+      {/* ================= SIDEBAR ================= */}
       <div className="w-64 bg-white border-r border-[#E6E9F0] p-6 flex flex-col">
 
         {/* LOGO */}
@@ -56,7 +55,7 @@ function DashboardLayout() {
                   to="/student"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Home
+                  🏠 Home
                 </Link>
               </li>
 
@@ -65,7 +64,7 @@ function DashboardLayout() {
                   to="/student/raise"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Raise Complaint
+                  ➕ Raise Complaint
                 </Link>
               </li>
 
@@ -74,7 +73,7 @@ function DashboardLayout() {
                   to="/student/complaints"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  My Complaints
+                  📄 My Complaints
                 </Link>
               </li>
 
@@ -83,7 +82,7 @@ function DashboardLayout() {
                   to="/profile"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Profile
+                  👤 Profile
                 </Link>
               </li>
             </>
@@ -97,7 +96,7 @@ function DashboardLayout() {
                   to="/warden"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Home
+                  🏠 Dashboard
                 </Link>
               </li>
 
@@ -106,7 +105,7 @@ function DashboardLayout() {
                   to="/warden/complaints"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Complaints
+                  📋 Complaints
                 </Link>
               </li>
 
@@ -115,7 +114,7 @@ function DashboardLayout() {
                   to="/warden/notices"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Announcements
+                  📢 Announcements
                 </Link>
               </li>
 
@@ -124,7 +123,7 @@ function DashboardLayout() {
                   to="/profile"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Profile
+                  👤 Profile
                 </Link>
               </li>
             </>
@@ -133,12 +132,43 @@ function DashboardLayout() {
           {/* ================= ADMIN MENU ================= */}
           {user.role === "admin" && (
             <>
+              <p className="text-xs text-gray-400 mt-4 mb-2 px-3 uppercase">
+                Admin
+              </p>
+
               <li>
                 <Link
                   to="/admin"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Admin Dashboard
+                  📊 Dashboard
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/admin/users"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  👥 Users
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/admin/complaints"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  📋 Complaints
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/admin/emergency"
+                  className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
+                >
+                  🚨 Emergency Contacts
                 </Link>
               </li>
 
@@ -147,7 +177,7 @@ function DashboardLayout() {
                   to="/profile"
                   className="block px-3 py-2 rounded-lg hover:bg-[#EEF2FF] hover:text-[#5D87FF]"
                 >
-                  Profile
+                  👤 Profile
                 </Link>
               </li>
             </>
@@ -165,7 +195,7 @@ function DashboardLayout() {
 
       </div>
 
-      {/* MAIN AREA */}
+      {/* ================= MAIN AREA ================= */}
       <div className="flex-1 flex flex-col">
 
         {/* NAVBAR */}
@@ -181,7 +211,7 @@ function DashboardLayout() {
           {/* RIGHT SIDE */}
           <div className="flex items-center gap-5">
 
-            {/* NOTIFICATION ICON */}
+            {/* NOTIFICATIONS */}
             <div className="relative cursor-pointer">
               <span className="text-xl">🔔</span>
 
@@ -206,7 +236,7 @@ function DashboardLayout() {
 
         </div>
 
-        {/* CONTENT */}
+        {/* PAGE CONTENT */}
         <div className="p-8">
           <Outlet />
         </div>

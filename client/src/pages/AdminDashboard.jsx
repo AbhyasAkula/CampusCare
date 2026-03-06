@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../utils/axios";
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [complaints, setComplaints] = useState([]);
-  const [contacts, setContacts] = useState([]);
-  const [newContact, setNewContact] = useState({
-    title: "",
-    phone: "",
-  });
+
+  const navigate = useNavigate();
 
   const loadData = async () => {
     try {
@@ -20,147 +18,135 @@ function AdminDashboard() {
       const compRes = await API.get("/admin/complaints");
       setComplaints(Array.isArray(compRes.data) ? compRes.data : []);
     } catch {}
-
-    try {
-      const contactRes = await API.get("/admin/contacts");
-      setContacts(Array.isArray(contactRes.data) ? contactRes.data : []);
-    } catch {}
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const blockUser = async (id) => {
-    await API.put(`/admin/block/${id}`);
-    loadData();
-  };
+  /* ================= STATISTICS ================= */
 
-  const addContact = async () => {
-    if (!newContact.title || !newContact.phone) {
-      alert("Fill all fields");
-      return;
-    }
+  const totalUsers = users.length;
 
-    await API.post("/admin/contacts", newContact);
-    setNewContact({ title: "", phone: "" });
-    loadData();
-  };
+  const totalComplaints = complaints.length;
 
-  const deleteContact = async (id) => {
-    if (!window.confirm("Delete this contact?")) return;
-    await API.delete(`/admin/contacts/${id}`);
-    loadData();
-  };
+  const pendingComplaints = complaints.filter(
+    (c) => c.status === "Pending"
+  ).length;
+
+  const resolvedComplaints = complaints.filter(
+    (c) => c.status === "Resolved"
+  ).length;
+
+  const recentComplaints = [...complaints]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
 
-      {/* EMERGENCY CONTACTS */}
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="text-2xl font-semibold mb-4">🚨 Emergency Contacts</h2>
+      {/* TITLE */}
+      <div>
+        <h1 className="text-3xl font-bold text-[#2A3547]">
+          Admin Dashboard
+        </h1>
+        <p className="text-gray-500">
+          Overview of hostel system activity
+        </p>
+      </div>
 
-        <div className="flex gap-3 mb-4">
-          <input
-            placeholder="Title"
-            value={newContact.title}
-            onChange={(e) =>
-              setNewContact({ ...newContact, title: e.target.value })
-            }
-            className="border p-2 rounded w-1/2"
-          />
-          <input
-            placeholder="Phone"
-            value={newContact.phone}
-            onChange={(e) =>
-              setNewContact({ ...newContact, phone: e.target.value })
-            }
-            className="border p-2 rounded w-1/2"
-          />
-        </div>
+      {/* STAT CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        <button
-          onClick={addContact}
-          className="bg-green-600 text-white px-4 py-2 rounded"
+        {/* TOTAL USERS */}
+        <div
+          onClick={() => navigate("/admin/users")}
+          className="bg-white p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition"
         >
-          Add Contact
-        </button>
-
-        <div className="mt-5 space-y-3">
-          {contacts.map((c) => (
-            <div
-              key={c._id}
-              className="flex justify-between items-center border-b pb-2"
-            >
-              <p>
-                <strong>{c.title}</strong> — {c.phone}
-              </p>
-              <button
-                onClick={() => deleteContact(c._id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          ))}
+          <p className="text-gray-500 text-sm">Total Users</p>
+          <h2 className="text-3xl font-bold text-[#5D87FF] mt-2">
+            {totalUsers}
+          </h2>
         </div>
+
+        {/* TOTAL COMPLAINTS */}
+        <div
+          onClick={() => navigate("/admin/complaints")}
+          className="bg-white p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition"
+        >
+          <p className="text-gray-500 text-sm">Total Complaints</p>
+          <h2 className="text-3xl font-bold text-[#5D87FF] mt-2">
+            {totalComplaints}
+          </h2>
+        </div>
+
+        {/* PENDING */}
+        <div
+          onClick={() => navigate("/admin/complaints?status=Pending")}
+          className="bg-white p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition"
+        >
+          <p className="text-gray-500 text-sm">Pending Complaints</p>
+          <h2 className="text-3xl font-bold text-yellow-500 mt-2">
+            {pendingComplaints}
+          </h2>
+        </div>
+
+        {/* RESOLVED */}
+        <div
+          onClick={() => navigate("/admin/complaints?status=Resolved")}
+          className="bg-white p-6 rounded-xl shadow cursor-pointer hover:shadow-lg transition"
+        >
+          <p className="text-gray-500 text-sm">Resolved Complaints</p>
+          <h2 className="text-3xl font-bold text-green-600 mt-2">
+            {resolvedComplaints}
+          </h2>
+        </div>
+
       </div>
 
-      {/* USERS */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">All Users</h2>
+      {/* RECENT COMPLAINTS */}
+      <div className="bg-white p-6 rounded-xl shadow">
 
-        {users.map((u) => (
-          <div
-            key={u._id}
-            className="bg-white p-4 rounded-xl shadow mb-3 flex justify-between items-center"
-          >
-            <div>
-              <p className="font-semibold">{u.name}</p>
-              <p>{u.email}</p>
-              <p className="text-sm text-gray-500">Role: {u.role}</p>
-            </div>
+        <h2 className="text-xl font-semibold mb-4">
+          Recent Complaints
+        </h2>
 
-            {u.role === "student" && !u.isBlocked && (
-              <button
-                onClick={() => blockUser(u._id)}
-                className="bg-red-500 text-white px-3 py-1 rounded"
+        {recentComplaints.length === 0 ? (
+          <p className="text-gray-500">No complaints yet</p>
+        ) : (
+          <div className="space-y-4">
+
+            {recentComplaints.map((c) => (
+              <div
+                key={c._id}
+                className="border-b pb-3 flex justify-between items-center"
               >
-                Block
-              </button>
-            )}
+                <div>
+                  <p className="font-semibold">{c.title}</p>
 
-            {u.isBlocked && (
-              <span className="text-red-600 font-bold">Blocked</span>
-            )}
+                  <p className="text-sm text-gray-500">
+                    {c.student?.name} • {c.block} {c.room}
+                  </p>
+                </div>
+
+                <span
+                  className={`px-3 py-1 text-xs rounded-full ${
+                    c.status === "Pending"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : c.status === "In Progress"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  {c.status}
+                </span>
+
+              </div>
+            ))}
+
           </div>
-        ))}
-      </div>
+        )}
 
-      {/* COMPLAINTS */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">All Complaints</h2>
-
-        {complaints.map((c) => (
-          <div key={c._id} className="bg-white p-4 rounded-xl shadow mb-4">
-            <p className="font-bold">{c.title}</p>
-            <p>{c.description}</p>
-
-            <p className="text-sm text-gray-600 mt-2">
-              Student: {c.student?.name} ({c.student?.email})
-            </p>
-
-            <p className="mt-1">
-              Status: <strong>{c.status}</strong>
-            </p>
-
-            {c.reply && (
-              <p className="text-green-600 mt-2">
-                Reply: {c.reply}
-              </p>
-            )}
-          </div>
-        ))}
       </div>
 
     </div>
