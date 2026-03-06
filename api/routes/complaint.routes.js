@@ -36,4 +36,21 @@ router.get("/my", protect, async (req, res) => {
 });
 
 
+// GET SINGLE COMPLAINT (for chat header)
+router.get("/:id", protect, async (req, res) => {
+  try {
+
+    const complaint = await Complaint.findById(req.params.id);
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    res.json(complaint);
+
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load complaint" });
+  }
+});
+
 module.exports = router;
