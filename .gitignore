@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# environment files
+.env
+
+# backend
+api/node_modules/
+
+# frontend
+client/node_modules/
+client/dist/
+
+# uploads (images)
+api/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
