@@ -5,14 +5,18 @@ import socket from "../utils/socket";
 
 function MyComplaints() {
   const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const loadComplaints = async () => {
     try {
+      setLoading(true);
       const res = await API.get("/complaints/my");
       setComplaints(res.data);
     } catch (err) {
-      console.error("Failed to load complaints");
+      console.error("Failed to load complaints", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -28,82 +32,105 @@ function MyComplaints() {
     return () => socket.off("complaintUpdated", handleUpdate);
   }, []);
 
-  const statusColor = (status) => {
-    if (status === "Pending")
-      return "bg-amber-100 text-amber-700 border-amber-200";
-    if (status === "In Progress")
-      return "bg-blue-100 text-blue-700 border-blue-200";
-    if (status === "Resolved")
-      return "bg-emerald-100 text-emerald-700 border-emerald-200";
-    return "bg-slate-100 text-slate-700 border-slate-200";
+  const getStatusClass = (status) => {
+    if (status === "Pending") return "status-badge status-pending";
+    if (status === "In Progress") return "status-badge status-progress";
+    if (status === "Resolved") return "status-badge status-success";
+    return "status-badge status-neutral";
   };
 
   return (
-    <div className="animate-in fade-in duration-500">
-      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">My Complaints</h1>
-          <p className="mt-1 text-sm text-slate-500">Track the status of your reported issues.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">My Complaints</h1>
+          <p className="mt-2 text-sm text-slate-500">Track the status of your reported issues.</p>
         </div>
-        <button
-          onClick={() => navigate('/student/raise')}
-          className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          <svg className="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
+        <button onClick={() => navigate("/student/raise")} className="portal-button-primary">
           Raise New Ticket
         </button>
       </div>
 
-      {complaints.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-400">
-            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      {loading ? (
+        <div className="portal-panel overflow-hidden">
+          <div className="space-y-3 px-6 py-6">
+            {[...Array(5)].map((_, index) => (
+              <div key={index} className="grid gap-4 rounded-xl border border-slate-200 p-4 md:grid-cols-[2.2fr_1fr_1fr_auto]">
+                <div className="skeleton h-12 rounded-xl" />
+                <div className="skeleton h-10 rounded-xl" />
+                <div className="skeleton h-10 rounded-xl" />
+                <div className="skeleton h-10 rounded-xl" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : complaints.length === 0 ? (
+        <div className="portal-panel px-6 py-14 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 text-indigo-700">
+            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
           </div>
-          <h3 className="mt-4 text-sm font-semibold text-slate-900">No complaints found</h3>
-          <p className="mt-1 text-sm text-slate-500">You haven't reported any issues yet.</p>
+          <h2 className="mt-4 text-lg font-semibold text-slate-900">No complaints found</h2>
+          <p className="mt-2 text-sm text-slate-500">You have not reported any hostel issue yet.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {complaints.map((c) => (
-            <div
-              key={c._id}
-              className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md"
-            >
-              <div className="p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <h3 className="font-bold text-slate-900 line-clamp-2">{c.title}</h3>
-                  <span className={`inline-flex flex-shrink-0 items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusColor(c.status)}`}>
-                    {c.status}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm text-slate-600 line-clamp-3">{c.description}</p>
-                {c.image && (
-                  <div className="mt-4 overflow-hidden rounded-xl border border-slate-200">
-                    <img
-                      src={`http://localhost:5000/uploads/${c.image}`}
-                      alt="complaint evidence"
-                      className="h-32 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="border-t border-slate-100 bg-slate-50 px-6 py-4">
-                <button
-                  onClick={() => navigate(`/complaint/${c._id}/chat`)}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-indigo-600 shadow-sm ring-1 ring-inset ring-slate-200 transition-all hover:bg-slate-50 hover:text-indigo-700"
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                  View Discussion
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="portal-panel overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+              <thead className="bg-indigo-50/70">
+                <tr className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <th className="px-6 py-4">Issue</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Submitted</th>
+                  <th className="px-6 py-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 bg-white">
+                {complaints.map((complaint) => (
+                  <tr key={complaint._id} className="transition hover:bg-indigo-50/70">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        {complaint.image ? (
+                          <div className="h-12 w-12 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                            <img
+                              src={`http://localhost:5000/uploads/${complaint.image}`}
+                              alt={complaint.title}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-indigo-50 text-indigo-700">
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="truncate font-semibold text-slate-900">{complaint.title}</p>
+                          <p className="mt-1 truncate text-sm text-slate-500">{complaint.description}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={getStatusClass(complaint.status)}>{complaint.status}</span>
+                    </td>
+                    <td className="px-6 py-4 text-slate-500">
+                      {new Date(complaint.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => navigate(`/complaint/${complaint._id}/chat`)}
+                        className="portal-button-secondary"
+                      >
+                        Open Chat
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

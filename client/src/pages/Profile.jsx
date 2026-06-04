@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../utils/axios";
 import toast from "react-hot-toast";
 
 function Profile() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // load profile
   const loadProfile = async () => {
     try {
       const res = await API.get("/profile");
@@ -21,7 +22,6 @@ function Profile() {
     loadProfile();
   }, []);
 
-  // upload image
   const handleUpload = async () => {
     if (!file) return toast.error("Select an image first");
     setIsUploading(true);
@@ -31,7 +31,7 @@ function Profile() {
 
     try {
       await API.put("/profile/upload", formData);
-      toast.success("Profile picture updated!");
+      toast.success("Profile picture updated");
       setFile(null);
       loadProfile();
     } catch {
@@ -41,123 +41,151 @@ function Profile() {
     }
   };
 
-  if (!user) return (
-    <div className="flex h-64 items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600"></div>
-    </div>
-  );
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-5xl space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="skeleton h-10 w-10 rounded-xl" />
+          <div className="space-y-2">
+            <div className="skeleton h-5 w-32 rounded-full" />
+            <div className="skeleton h-4 w-48 rounded-full" />
+          </div>
+        </div>
+        <div className="portal-panel p-6">
+          <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+            <div className="skeleton h-72 rounded-xl" />
+            <div className="space-y-4">
+              <div className="skeleton h-32 rounded-xl" />
+              <div className="skeleton h-32 rounded-xl" />
+              <div className="skeleton h-32 rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const homeRoute =
+    user.role === "admin" ? "/admin" : user.role === "warden" ? "/warden" : "/student";
 
   return (
-    <div className="mx-auto max-w-3xl animate-in fade-in duration-500">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">My Profile</h1>
-        <p className="mt-1 text-sm text-slate-500">Manage your personal information and preferences.</p>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <button onClick={() => navigate(homeRoute)} className="portal-button-secondary">
+            Back
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">My Profile</h1>
+            <p className="mt-2 text-sm text-slate-500">Manage your account details and profile photo.</p>
+          </div>
+        </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        {/* Cover Photo Area */}
-        <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-500 sm:h-40"></div>
-        
-        <div className="px-6 pb-8 sm:px-10">
-          <div className="relative -mt-16 sm:-mt-20 flex flex-col sm:flex-row sm:items-end sm:space-x-5">
-            <div className="relative group">
+      <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+        <aside className="portal-panel overflow-hidden">
+          <div className="border-b border-indigo-100 bg-indigo-50 px-6 py-5">
+            <div className="flex flex-col items-center text-center">
               <img
                 src={
                   user.profilePic
                     ? `http://localhost:5000/uploads/${user.profilePic}`
-                    : "https://ui-avatars.com/api/?name=" + encodeURIComponent(user.name) + "&background=random"
+                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=EEF2FF&color=3730A3`
                 }
                 alt="Profile"
-                className="h-32 w-32 rounded-full ring-4 ring-white object-cover bg-white sm:h-40 sm:w-40"
+                className="h-24 w-24 rounded-full border-4 border-white object-cover"
               />
-            </div>
-            <div className="mt-4 sm:mt-0 sm:pb-4 flex-1">
-              <h2 className="text-2xl font-bold text-slate-900">{user.name}</h2>
-              <p className="text-sm font-medium text-slate-500 capitalize">{user.role}</p>
+              <h2 className="mt-4 text-xl font-semibold text-slate-900">{user.name}</h2>
+              <p className="mt-1 text-sm capitalize text-slate-500">{user.role}</p>
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-1 space-y-6">
-              <div>
-                <h3 className="text-sm font-medium text-slate-900 mb-3 border-b border-slate-100 pb-2">Profile Photo</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-center w-full">
-                    <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <svg className="w-8 h-8 mb-3 text-slate-400" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        <p className="text-xs text-slate-500 font-medium">Click to upload</p>
-                      </div>
-                      <input id="dropzone-file" type="file" className="hidden" onChange={(e) => setFile(e.target.files[0])} accept="image/*" />
-                    </label>
-                  </div>
-                  {file && <p className="text-xs text-indigo-600 font-medium truncate">{file.name}</p>}
-                  <button
-                    onClick={handleUpload}
-                    disabled={!file || isUploading}
-                    className="w-full flex justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isUploading ? "Uploading..." : "Save Photo"}
-                  </button>
+          <div className="space-y-5 px-6 py-5">
+            <div>
+              <label htmlFor="profile-upload" className="portal-label">
+                Update Profile Photo
+              </label>
+              <label
+                htmlFor="profile-upload"
+                className="mt-2 flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center transition hover:border-indigo-400 hover:bg-indigo-50"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Choose image</p>
+                  <p className="mt-1 text-xs text-slate-500">Upload a clear profile photo.</p>
                 </div>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-slate-900 mb-3 border-b border-slate-100 pb-2">Contact Info</h3>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3 text-sm text-slate-600">
-                    <svg className="h-5 w-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <span className="truncate">{user.email}</span>
-                  </div>
-                  <div className="flex items-start gap-3 text-sm text-slate-600">
-                    <svg className="h-5 w-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    <span>{user.block ? `Block ${user.block}` : "No Block"} • {user.room ? `Room ${user.room}` : "No Room"}</span>
-                  </div>
-                </div>
-              </div>
+                <input
+                  id="profile-upload"
+                  type="file"
+                  className="sr-only"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  accept="image/*"
+                />
+              </label>
+              {file && <p className="mt-2 truncate text-sm text-slate-600">{file.name}</p>}
             </div>
 
-            <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Activity Overview</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center transition-all hover:border-indigo-200 hover:bg-white hover:shadow-sm">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 mb-3">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                  </div>
-                  <p className="text-2xl font-bold text-slate-900">{user.totalComplaints || 0}</p>
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Total Tickets</p>
-                </div>
-                
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center transition-all hover:border-amber-200 hover:bg-white hover:shadow-sm">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-600 mb-3">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <p className="text-2xl font-bold text-slate-900">{user.pendingComplaints || 0}</p>
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Active</p>
-                </div>
-
-                <div className="col-span-2 sm:col-span-1 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center transition-all hover:border-emerald-200 hover:bg-white hover:shadow-sm">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-3">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <p className="text-2xl font-bold text-slate-900">{user.resolvedComplaints || 0}</p>
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mt-1">Resolved</p>
-                </div>
-              </div>
-            </div>
+            <button
+              onClick={handleUpload}
+              disabled={!file || isUploading}
+              className="portal-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isUploading ? "Uploading..." : "Save Photo"}
+            </button>
           </div>
+        </aside>
+
+        <div className="space-y-6">
+          <section className="portal-panel overflow-hidden">
+            <div className="portal-section-head">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Personal Information</h2>
+                <p className="text-sm text-slate-500">Your registered hostel account details</p>
+              </div>
+            </div>
+            <div className="grid gap-4 px-6 py-4 sm:grid-cols-2">
+              <div className="portal-panel-soft px-4 py-4">
+                <p className="text-xs font-semibold text-slate-500">Email</p>
+                <p className="mt-2 text-sm font-medium text-slate-900">{user.email || "Not available"}</p>
+              </div>
+              <div className="portal-panel-soft px-4 py-4">
+                <p className="text-xs font-semibold text-slate-500">Role</p>
+                <p className="mt-2 text-sm font-medium capitalize text-slate-900">{user.role}</p>
+              </div>
+              <div className="portal-panel-soft px-4 py-4">
+                <p className="text-xs font-semibold text-slate-500">Hostel Block</p>
+                <p className="mt-2 text-sm font-medium text-slate-900">
+                  {user.block ? `Block ${user.block}` : "Not assigned"}
+                </p>
+              </div>
+              <div className="portal-panel-soft px-4 py-4">
+                <p className="text-xs font-semibold text-slate-500">Room Number</p>
+                <p className="mt-2 text-sm font-medium text-slate-900">
+                  {user.room ? `Room ${user.room}` : "Not assigned"}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="portal-panel overflow-hidden">
+            <div className="portal-section-head">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Complaint Overview</h2>
+                <p className="text-sm text-slate-500">Quick summary of your complaint activity</p>
+              </div>
+            </div>
+            <div className="grid gap-4 px-6 py-4 sm:grid-cols-3">
+              {[
+                { label: "Total Tickets", value: user.totalComplaints || 0 },
+                { label: "Pending Tickets", value: user.pendingComplaints || 0 },
+                { label: "Resolved Tickets", value: user.resolvedComplaints || 0 },
+              ].map((item) => (
+                <div key={item.label} className="portal-panel-soft px-4 py-4">
+                  <p className="text-xs font-semibold text-slate-500">{item.label}</p>
+                  <p className="mt-3 text-3xl font-bold text-slate-900">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
     </div>
