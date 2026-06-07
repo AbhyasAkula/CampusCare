@@ -18,17 +18,13 @@ function Profile() {
     }
   };
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  useEffect(() => { loadProfile(); }, []);
 
   const handleUpload = async () => {
     if (!file) return toast.error("Select an image first");
     setIsUploading(true);
-
     const formData = new FormData();
     formData.append("profilePic", file);
-
     try {
       await API.put("/profile/upload", formData);
       toast.success("Profile picture updated");
@@ -44,20 +40,13 @@ function Profile() {
   if (!user) {
     return (
       <div className="mx-auto max-w-5xl space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="skeleton h-10 w-10 rounded-xl" />
-          <div className="space-y-2">
-            <div className="skeleton h-5 w-32 rounded-full" />
-            <div className="skeleton h-4 w-48 rounded-full" />
-          </div>
-        </div>
+        <div className="skeleton h-7 w-40 rounded-md" />
         <div className="portal-panel p-6">
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-            <div className="skeleton h-72 rounded-xl" />
+            <div className="skeleton h-64 rounded-xl" />
             <div className="space-y-4">
-              <div className="skeleton h-32 rounded-xl" />
-              <div className="skeleton h-32 rounded-xl" />
-              <div className="skeleton h-32 rounded-xl" />
+              <div className="skeleton h-28 rounded-xl" />
+              <div className="skeleton h-28 rounded-xl" />
             </div>
           </div>
         </div>
@@ -65,123 +54,109 @@ function Profile() {
     );
   }
 
-  const homeRoute =
-    user.role === "admin" ? "/admin" : user.role === "warden" ? "/warden" : "/student";
+  const homeRoute = user.role === "admin" ? "/admin" : user.role === "warden" ? "/warden" : "/student";
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <button onClick={() => navigate(homeRoute)} className="portal-button-secondary">
-            Back
-          </button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">My Profile</h1>
-            <p className="mt-2 text-sm text-slate-500">Manage your account details and profile photo.</p>
-          </div>
+      {/* Page Header */}
+      <header className="flex items-center gap-3">
+        <button onClick={() => navigate(homeRoute)} className="portal-button-secondary">
+          Back
+        </button>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-brandText">Account Settings</h1>
+          <p className="mt-0.5 text-sm text-brandText-muted">Manage your profile and account details.</p>
         </div>
-      </div>
+      </header>
 
-      <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+        {/* Sidebar: Avatar and upload */}
         <aside className="portal-panel overflow-hidden">
-          <div className="border-b border-indigo-100 bg-indigo-50 px-6 py-5">
-            <div className="flex flex-col items-center text-center">
-              <img
-                src={
-                  user.profilePic
-                    ? `http://localhost:5000/uploads/${user.profilePic}`
-                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=EEF2FF&color=3730A3`
-                }
-                alt="Profile"
-                className="h-24 w-24 rounded-full border-4 border-white object-cover"
-              />
-              <h2 className="mt-4 text-xl font-semibold text-slate-900">{user.name}</h2>
-              <p className="mt-1 text-sm capitalize text-slate-500">{user.role}</p>
-            </div>
+          <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-6 text-center">
+            <img
+              src={
+                user.profilePic
+                  ? `http://localhost:5000/uploads/${user.profilePic}`
+                  : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=EEF2FF&color=2563EB`
+              }
+              alt="Profile"
+              className="mx-auto h-24 w-24 rounded-full border-4 border-surface shadow-sm object-cover"
+            />
+            <h2 className="mt-4 text-base font-bold text-brandText">{user.name}</h2>
+            <span className="mt-1 inline-flex items-center rounded-full border border-brandBorder bg-surface px-2.5 py-0.5 text-xs font-semibold capitalize text-brandText-muted">
+              {user.role}
+            </span>
           </div>
 
-          <div className="space-y-5 px-6 py-5">
+          <div className="space-y-4 px-6 py-5">
             <div>
-              <label htmlFor="profile-upload" className="portal-label">
-                Update Profile Photo
-              </label>
+              <label className="portal-label">Update Profile Photo</label>
               <label
                 htmlFor="profile-upload"
-                className="mt-2 flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center transition hover:border-indigo-400 hover:bg-indigo-50"
+                className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brandBorder bg-[#F8FAFC] px-4 py-4 text-center transition hover:border-primary hover:bg-white"
               >
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">Choose image</p>
-                  <p className="mt-1 text-xs text-slate-500">Upload a clear profile photo.</p>
-                </div>
-                <input
-                  id="profile-upload"
-                  type="file"
-                  className="sr-only"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  accept="image/*"
-                />
+                <svg className="h-4 w-4 text-brandText-muted" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                <span className="text-sm font-semibold text-brandText">
+                  {file ? file.name : "Choose image"}
+                </span>
+                <input id="profile-upload" type="file" className="sr-only" onChange={(e) => setFile(e.target.files[0])} accept="image/*" />
               </label>
-              {file && <p className="mt-2 truncate text-sm text-slate-600">{file.name}</p>}
             </div>
-
             <button
               onClick={handleUpload}
               disabled={!file || isUploading}
               className="portal-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isUploading ? "Uploading..." : "Save Photo"}
+              {isUploading ? "Saving..." : "Save Photo"}
             </button>
           </div>
         </aside>
 
-        <div className="space-y-6">
+        {/* Main Content */}
+        <div className="space-y-5">
+          {/* Personal Information */}
           <section className="portal-panel overflow-hidden">
             <div className="portal-section-head">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">Personal Information</h2>
-                <p className="text-sm text-slate-500">Your registered hostel account details</p>
+                <h2 className="text-sm font-semibold text-brandText">Personal Information</h2>
+                <p className="mt-0.5 text-xs text-brandText-muted">Your registered hostel account details</p>
               </div>
             </div>
-            <div className="grid gap-4 px-6 py-4 sm:grid-cols-2">
-              <div className="portal-panel-soft px-4 py-4">
-                <p className="text-xs font-semibold text-slate-500">Email</p>
-                <p className="mt-2 text-sm font-medium text-slate-900">{user.email || "Not available"}</p>
-              </div>
-              <div className="portal-panel-soft px-4 py-4">
-                <p className="text-xs font-semibold text-slate-500">Role</p>
-                <p className="mt-2 text-sm font-medium capitalize text-slate-900">{user.role}</p>
-              </div>
-              <div className="portal-panel-soft px-4 py-4">
-                <p className="text-xs font-semibold text-slate-500">Hostel Block</p>
-                <p className="mt-2 text-sm font-medium text-slate-900">
-                  {user.block ? `Block ${user.block}` : "Not assigned"}
-                </p>
-              </div>
-              <div className="portal-panel-soft px-4 py-4">
-                <p className="text-xs font-semibold text-slate-500">Room Number</p>
-                <p className="mt-2 text-sm font-medium text-slate-900">
-                  {user.room ? `Room ${user.room}` : "Not assigned"}
-                </p>
-              </div>
+            <div className="grid gap-px bg-brandBorder sm:grid-cols-2">
+              {[
+                { label: "Full Name", value: user.name },
+                { label: "Email Address", value: user.email || "Not available" },
+                { label: "Role", value: user.role },
+                { label: "Hostel Block", value: user.block ? `Block ${user.block}` : "Not assigned" },
+                { label: "Room Number", value: user.room ? `Room ${user.room}` : "Not assigned" },
+              ].map((item) => (
+                <div key={item.label} className="bg-surface px-5 py-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-brandText-muted">{item.label}</p>
+                  <p className="mt-1.5 text-sm font-semibold text-brandText capitalize">{item.value}</p>
+                </div>
+              ))}
             </div>
           </section>
 
+          {/* Complaint Overview */}
           <section className="portal-panel overflow-hidden">
             <div className="portal-section-head">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">Complaint Overview</h2>
-                <p className="text-sm text-slate-500">Quick summary of your complaint activity</p>
+                <h2 className="text-sm font-semibold text-brandText">Complaint Overview</h2>
+                <p className="mt-0.5 text-xs text-brandText-muted">Summary of your complaint activity</p>
               </div>
             </div>
-            <div className="grid gap-4 px-6 py-4 sm:grid-cols-3">
+            <div className="grid grid-cols-3 divide-x divide-brandBorder">
               {[
-                { label: "Total Tickets", value: user.totalComplaints || 0 },
-                { label: "Pending Tickets", value: user.pendingComplaints || 0 },
-                { label: "Resolved Tickets", value: user.resolvedComplaints || 0 },
+                { label: "Total", value: user.totalComplaints || 0 },
+                { label: "Pending", value: user.pendingComplaints || 0 },
+                { label: "Resolved", value: user.resolvedComplaints || 0 },
               ].map((item) => (
-                <div key={item.label} className="portal-panel-soft px-4 py-4">
-                  <p className="text-xs font-semibold text-slate-500">{item.label}</p>
-                  <p className="mt-3 text-3xl font-bold text-slate-900">{item.value}</p>
+                <div key={item.label} className="px-6 py-5 text-center">
+                  <p className="text-3xl font-bold tracking-tight text-brandText">{item.value}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-brandText-muted">{item.label}</p>
                 </div>
               ))}
             </div>

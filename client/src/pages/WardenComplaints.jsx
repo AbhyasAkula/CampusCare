@@ -1,187 +1,171 @@
 import { useEffect, useState } from "react";
 import API from "../utils/axios";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import socket from "../utils/socket";
 
-function WardenComplaints(){
-  const [complaints,setComplaints] = useState([]);
-  const [statusMap,setStatusMap] = useState({});
-
+function WardenComplaints() {
+  const [complaints, setComplaints] = useState([]);
+  const [statusMap, setStatusMap] = useState({});
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
   const statusFilter = searchParams.get("status");
 
   const loadComplaints = async () => {
-    try{
+    try {
       const res = await API.get("/warden");
-
-      const sorted = res.data.sort(
-        (a,b)=> new Date(b.createdAt)-new Date(a.createdAt)
-      );
-
+      const sorted = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setComplaints(sorted);
-
       const map = {};
-      sorted.forEach(c => map[c._id] = c.status);
+      sorted.forEach((c) => (map[c._id] = c.status));
       setStatusMap(map);
-    }catch{
+    } catch {
       toast.error("Failed to load complaints");
     }
   };
 
-  useEffect(()=>{
-    loadComplaints();
-  },[]);
+  useEffect(() => { loadComplaints(); }, []);
 
-  /* ================= REALTIME NEW COMPLAINT ================= */
-
-  useEffect(()=>{
-    socket.on("newComplaint",(complaint)=>{
+  useEffect(() => {
+    socket.on("newComplaint", (complaint) => {
       toast.success(`New Complaint: ${complaint.title}`);
-      setComplaints(prev => [complaint,...prev]);
-      setStatusMap(prev => ({
-        ...prev,
-        [complaint._id]: complaint.status
-      }));
+      setComplaints((prev) => [complaint, ...prev]);
+      setStatusMap((prev) => ({ ...prev, [complaint._id]: complaint.status }));
     });
-
-    return () => {
-      socket.off("newComplaint");
-    };
-  },[]);
+    return () => { socket.off("newComplaint"); };
+  }, []);
 
   const updateStatus = async (id) => {
-    try{
-      await API.put(`/warden/${id}`,{
-        status: statusMap[id]
-      });
-
+    try {
+      await API.put(`/warden/${id}`, { status: statusMap[id] });
       toast.success("Status updated");
       loadComplaints();
-    }catch{
+    } catch {
       toast.error("Update failed");
     }
   };
 
-  /* ================= FILTER LOGIC ================= */
-
   const filteredComplaints = statusFilter
-    ? complaints.filter(c => c.status === statusFilter)
+    ? complaints.filter((c) => c.status === statusFilter)
     : complaints;
 
-  const statusColor = (status) => {
-    if (status === "Pending")
-      return "bg-amber-100 text-amber-700 border-amber-200";
-    if (status === "In Progress")
-      return "bg-blue-100 text-blue-700 border-blue-200";
-    if (status === "Resolved")
-      return "bg-emerald-100 text-emerald-700 border-emerald-200";
-    return "bg-slate-100 text-slate-700 border-slate-200";
+  const getStatusCls = (status) => {
+    if (status === "Pending") return "status-badge status-pending";
+    if (status === "In Progress") return "status-badge status-progress";
+    if (status === "Resolved") return "status-badge status-success";
+    return "status-badge status-neutral";
   };
 
-  return(
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight text-brandText">
             {statusFilter ? `${statusFilter} Complaints` : "All Complaints"}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Manage and resolve student issues.</p>
+          <p className="mt-1 text-sm font-medium text-brandText-muted">Manage and resolve student hostel issues.</p>
         </div>
-
         {statusFilter && (
           <button
-            onClick={()=> navigate("/warden/complaints")}
-            className="inline-flex items-center justify-center rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition-colors"
+            onClick={() => navigate("/warden/complaints")}
+            className="portal-button-secondary self-start"
           >
             Clear Filter
           </button>
         )}
-      </div>
+      </header>
 
       {filteredComplaints.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-          <p className="text-sm font-medium text-slate-900">No complaints found</p>
-          <p className="text-sm text-slate-500 mt-1">There are no complaints matching your criteria.</p>
+        <div className="portal-panel flex flex-col items-center justify-center py-16 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+            <svg className="h-7 w-7 text-brandText-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="mt-3 text-sm font-semibold text-brandText">No complaints found</p>
+          <p className="mt-1 text-xs text-brandText-muted">No complaints match your current criteria.</p>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-          {filteredComplaints.map(c => (
-            <div key={c._id} className="flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md">
-              <div className="p-6">
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <h2 className="text-lg font-bold text-slate-900 line-clamp-2">{c.title}</h2>
-                  <span className={`inline-flex flex-shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-wider ${statusColor(c.status)}`}>
-                    {c.status}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 mb-4 text-xs font-medium text-slate-500 bg-slate-50 w-fit px-2.5 py-1 rounded-md border border-slate-100">
-                  <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                  <span>Block {c.block || "-"}</span>
-                  <span className="text-slate-300">•</span>
-                  <span>Room {c.room || "-"}</span>
-                </div>
-
-                <p className="text-sm text-slate-600 line-clamp-3 mb-4">
-                  {c.description}
-                </p>
-
-                {c.image && (
-                  <div className="mb-4 overflow-hidden rounded-xl border border-slate-200">
-                    <img
-                      src={`http://localhost:5000/uploads/${c.image}`}
-                      alt="complaint"
-                      className="h-32 w-full object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                  </div>
-                )}
-              </div>
-              
-              <div className="border-t border-slate-100 bg-slate-50 px-6 py-4 flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <select
-                    className="appearance-none block w-full rounded-xl border border-slate-300 bg-white py-2 pl-3 pr-8 text-sm font-medium text-slate-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    value={statusMap[c._id] || c.status}
-                    onChange={(e)=>
-                      setStatusMap(prev => ({
-                        ...prev,
-                        [c._id]: e.target.value
-                      }))
-                    }
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Resolved">Resolved</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-500">
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <button
-                    onClick={()=> updateStatus(c._id)}
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={()=> navigate(`/complaint/${c._id}/chat`)}
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 transition-all hover:bg-slate-50 hover:text-indigo-600"
-                  >
-                    Chat
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="portal-panel overflow-hidden">
+          <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-3">
+            <p className="text-sm font-semibold text-brandText">{filteredComplaints.length} complaint{filteredComplaints.length !== 1 ? "s" : ""}</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-brandBorder text-sm text-left">
+              <thead className="bg-slate-50/50">
+                <tr className="text-xs font-semibold uppercase tracking-wider text-brandText-muted">
+                  <th className="px-6 py-3">Complaint</th>
+                  <th className="px-6 py-3">Student</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Update Status</th>
+                  <th className="px-6 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-brandBorder bg-surface">
+                {filteredComplaints.map((c) => (
+                  <tr key={c._id} className="transition hover:bg-slate-50">
+                    <td className="px-6 py-4 max-w-xs">
+                      <div className="flex items-start gap-3">
+                        {c.image ? (
+                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-brandBorder">
+                            <img src={`http://localhost:5000/uploads/${c.image}`} alt={c.title} className="h-full w-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-brandBorder bg-slate-50 text-brandText-muted">
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-semibold text-brandText line-clamp-1">{c.title}</p>
+                          <p className="mt-0.5 text-xs text-brandText-muted line-clamp-2">{c.description}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-xs text-brandText-muted">
+                      <p className="font-semibold text-brandText">{c.student?.name || "Unknown student"}</p>
+                      <p className="mt-0.5">Block {c.block || "N/A"} / Room {c.room || "N/A"}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={getStatusCls(c.status)}>{c.status}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="relative">
+                        <select
+                          className="portal-input appearance-none py-1.5 pl-3 pr-8 text-xs"
+                          value={statusMap[c._id] || c.status}
+                          onChange={(e) => setStatusMap((prev) => ({ ...prev, [c._id]: e.target.value }))}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Resolved">Resolved</option>
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-brandText-muted">
+                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => updateStatus(c._id)}
+                          className="portal-button-primary text-xs px-3 py-1.5"
+                        >
+                          Update
+                        </button>
+                        <button
+                          onClick={() => navigate(`/complaint/${c._id}/chat`)}
+                          className="portal-button-secondary text-xs px-3 py-1.5"
+                        >
+                          Chat
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

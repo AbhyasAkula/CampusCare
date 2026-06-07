@@ -78,80 +78,98 @@ function DashboardLayout() {
 
   return (
     <div className="portal-shell">
-      <nav className="sticky top-0 z-50 border-b border-indigo-100 bg-indigo-50/90 backdrop-blur">
+      <nav className="sticky top-0 z-50 border-b border-brandBorder bg-surface">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex min-h-[72px] items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white">
-                <span className="text-lg font-bold">C</span>
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
+                  <span className="text-sm font-bold">C</span>
+                </div>
+                <div>
+                  <h1 className="text-base font-bold leading-tight text-brandText tracking-tight">CampusCare</h1>
+                  <p className="text-[11px] font-medium text-brandText-muted uppercase tracking-wider">{roleTitle}</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-lg font-bold leading-tight text-slate-900">CampusCare</h1>
-                <p className="text-xs font-medium text-slate-500">{roleTitle} Portal</p>
+
+              <div className="hidden h-16 items-center gap-1 md:flex ml-4">
+                {activeNavItems.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.to === `/${user.role}`}
+                    className={({ isActive }) =>
+                      `relative inline-flex items-center h-full px-3 text-sm font-medium transition-colors ${
+                        isActive
+                          ? "text-primary"
+                          : "text-brandText-muted hover:text-brandText"
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        {item.label}
+                        {isActive && (
+                          <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-t-sm" />
+                        )}
+                      </>
+                    )}
+                  </NavLink>
+                ))}
               </div>
             </div>
 
-            <div className="hidden items-center gap-2 md:flex">
-              {activeNavItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === `/${user.role}`}
-                  className={({ isActive }) =>
-                    `rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                      isActive
-                        ? "bg-indigo-600 text-white"
-                        : "text-slate-600 hover:bg-white/80 hover:text-indigo-700"
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
-
-            <div className="hidden items-center gap-3 md:flex">
-              <button className="relative rounded-xl border border-indigo-100 bg-white/80 p-2 text-slate-500 transition hover:bg-white hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                <span className="absolute right-1.5 top-1.5 flex h-2.5 w-2.5 rounded-full bg-indigo-500" />
+            <div className="hidden items-center gap-4 md:flex">
+              <button className="relative p-2 text-brandText-muted transition hover:text-brandText focus:outline-none">
+                <span className="absolute right-2 top-2 flex h-2 w-2 rounded-full bg-status-error" />
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                 </svg>
               </button>
 
+              <div className="h-6 w-px bg-brandBorder" />
+
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen((prev) => !prev)}
-                  className="flex items-center gap-3 rounded-full border border-indigo-100 bg-white px-1 py-1 pr-3 transition hover:border-indigo-200"
+                  className="flex items-center gap-2 rounded-full p-1 pr-2 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <img
                     src={user.profilePic ? `http://localhost:5000/uploads/${user.profilePic}` : "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
                     alt="profile"
-                    className="h-8 w-8 rounded-full object-cover"
+                    className="h-8 w-8 rounded-full border border-brandBorder object-cover shadow-sm"
                   />
-                  <span className="text-sm font-medium text-slate-700">{user.name?.split(" ")[0]}</span>
+                  <span className="text-sm font-medium text-brandText">{user.name?.split(" ")[0]}</span>
+                  <svg className="h-4 w-4 text-brandText-muted" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
                 </button>
 
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-52 rounded-xl border border-slate-200 bg-white py-1">
-                    <div className="border-b border-slate-100 px-4 py-3">
-                      <p className="text-sm text-slate-500">Signed in as</p>
-                      <p className="truncate text-sm font-medium text-slate-900">{user.email || user.name}</p>
+                  <div className="absolute right-0 mt-2 w-56 rounded-xl border border-brandBorder bg-surface py-1 shadow-lg shadow-slate-200/50">
+                    <div className="border-b border-brandBorder px-4 py-3">
+                      <p className="text-xs font-medium text-brandText-muted">Signed in as</p>
+                      <p className="truncate text-sm font-semibold text-brandText mt-0.5">{user.email || user.name}</p>
                     </div>
-                    <button
-                      onClick={() => {
-                        setProfileDropdownOpen(false);
-                        navigate("/profile");
-                      }}
-                      className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
-                    >
-                      Your Profile
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-slate-50"
-                    >
-                      Sign out
-                    </button>
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          setProfileDropdownOpen(false);
+                          navigate("/profile");
+                        }}
+                        className="block w-full px-4 py-2 text-left text-sm text-brandText hover:bg-slate-50 transition-colors"
+                      >
+                        Account Settings
+                      </button>
+                    </div>
+                    <div className="border-t border-brandBorder py-1">
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full px-4 py-2 text-left text-sm font-medium text-status-error transition-colors hover:bg-status-error/10"
+                      >
+                        Sign out
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -160,7 +178,7 @@ function DashboardLayout() {
             <div className="flex items-center md:hidden">
               <button
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
-                className="inline-flex items-center justify-center rounded-xl border border-indigo-100 bg-white p-2 text-slate-500 transition hover:bg-slate-50"
+                className="inline-flex items-center justify-center rounded-lg p-2 text-brandText-muted transition hover:bg-slate-50 hover:text-brandText focus:outline-none"
               >
                 {!mobileMenuOpen ? (
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
@@ -177,7 +195,7 @@ function DashboardLayout() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="border-t border-indigo-100 bg-indigo-50 md:hidden">
+          <div className="border-t border-brandBorder bg-surface md:hidden">
             <div className="space-y-1 px-4 py-3">
               {activeNavItems.map((item) => (
                 <NavLink
@@ -186,14 +204,44 @@ function DashboardLayout() {
                   end={item.to === `/${user.role}`}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    `block rounded-xl px-4 py-3 text-sm font-semibold ${
-                      isActive ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-white hover:text-indigo-700"
+                    `block rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                      isActive ? "bg-slate-50 text-primary" : "text-brandText-muted hover:bg-slate-50 hover:text-brandText"
                     }`
                   }
                 >
                   {item.label}
                 </NavLink>
               ))}
+            </div>
+            <div className="border-t border-brandBorder px-4 py-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src={user.profilePic ? `http://localhost:5000/uploads/${user.profilePic}` : "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+                  alt="profile"
+                  className="h-10 w-10 rounded-full border border-brandBorder object-cover"
+                />
+                <div>
+                  <p className="text-sm font-medium text-brandText">{user.name}</p>
+                  <p className="text-xs text-brandText-muted">{user.email}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-col gap-2">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate("/profile");
+                  }}
+                  className="rounded-lg border border-brandBorder px-4 py-2 text-sm font-medium text-brandText hover:bg-slate-50 transition-colors"
+                >
+                  Account Settings
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="rounded-lg bg-status-error/10 px-4 py-2 text-sm font-medium text-status-error transition-colors hover:bg-status-error/20"
+                >
+                  Sign out
+                </button>
+              </div>
             </div>
           </div>
         )}
