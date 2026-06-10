@@ -34,6 +34,37 @@ function MyComplaints() {
     return () => socket.off("complaintUpdated", handleUpdate);
   }, []);
 
+  useEffect(() => {
+    const handleMessageActivity = ({ complaintId, senderRole, unreadCount, studentUnreadCount }) => {
+      if (senderRole !== "warden") return;
+      const nextUnreadCount = Number(studentUnreadCount ?? unreadCount ?? 0);
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === complaintId
+            ? { ...complaint, studentUnreadCount: nextUnreadCount }
+            : complaint
+        )
+      );
+    };
+    const handleRead = ({ complaintId, role }) => {
+      if (role !== "student") return;
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === complaintId
+            ? { ...complaint, studentUnreadCount: 0 }
+            : complaint
+        )
+      );
+    };
+
+    socket.on("complaintMessageActivity", handleMessageActivity);
+    socket.on("complaintRead", handleRead);
+    return () => {
+      socket.off("complaintMessageActivity", handleMessageActivity);
+      socket.off("complaintRead", handleRead);
+    };
+  }, []);
+
   const getStatusCls = (status) =>
     STATUS_CONFIG[status]?.cls || "status-badge status-neutral";
 
@@ -97,7 +128,10 @@ function MyComplaints() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-brandBorder bg-surface">
-                {complaints.map((complaint) => (
+                {complaints.map((complaint) => {
+                  const studentUnreadCount = Number(complaint.studentUnreadCount || 0);
+
+                  return (
                   <tr key={complaint._id} className="transition hover:bg-slate-50">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -131,13 +165,20 @@ function MyComplaints() {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => navigate(`/complaint/${complaint._id}/chat`)}
-                        className="portal-button-secondary text-xs px-3 py-1.5"
+                        className={
+                          studentUnreadCount > 0
+                            ? "inline-flex items-center justify-center rounded-lg border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/15"
+                            : "portal-button-secondary text-xs px-3 py-1.5"
+                        }
                       >
-                        Open Chat
+                        {studentUnreadCount > 0
+                          ? `${studentUnreadCount} New`
+                          : "Chat"}
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

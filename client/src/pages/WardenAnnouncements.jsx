@@ -59,7 +59,7 @@ function WardenAnnouncements() {
       <div className="portal-panel overflow-hidden">
         <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-4">
           <h2 className="text-sm font-semibold text-brandText">Create Announcement</h2>
-          <p className="mt-0.5 text-xs text-brandText-muted">Announcements are broadcast in real-time to all logged-in students.</p>
+          {/* <p className="mt-0.5 text-xs text-brandText-muted">Announcements are broadcast in real-time to all logged-in students.</p> */}
         </div>
         <div className="px-6 py-5">
           <form onSubmit={postNotice} className="space-y-4">

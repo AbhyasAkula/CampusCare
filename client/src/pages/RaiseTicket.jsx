@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 function RaiseTicket() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [hostelBlock, setHostelBlock] = useState("");
+  const [roomNumber, setRoomNumber] = useState("");
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,16 +20,29 @@ function RaiseTicket() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const normalizedRoomNumber = roomNumber.trim();
+
+    if (!hostelBlock || !normalizedRoomNumber) {
+      toast.error("Select a hostel block and enter your room number");
+      return;
+    }
+
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("hostelBlock", hostelBlock);
+    formData.append("roomNumber", normalizedRoomNumber);
+    formData.append("block", hostelBlock);
+    formData.append("room", normalizedRoomNumber);
     if (image) formData.append("image", image);
     try {
       await API.post("/complaints", formData);
       toast.success("Complaint submitted successfully");
       setTitle("");
       setDescription("");
+      setHostelBlock("");
+      setRoomNumber("");
       setImage(null);
     } catch {
       toast.error("Failed to submit complaint");
@@ -50,7 +65,7 @@ function RaiseTicket() {
         {/* Card Header */}
         <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-4">
           <h2 className="text-sm font-semibold text-brandText">New Complaint</h2>
-          <p className="mt-0.5 text-xs text-brandText-muted">All fields marked with * are required.</p>
+          {/* <p className="mt-0.5 text-xs text-brandText-muted">All fields marked with * are required.</p> */}
         </div>
 
         {/* Submission Guide */}
@@ -88,7 +103,7 @@ function RaiseTicket() {
               <input
                 id="title"
                 type="text"
-                placeholder="e.g. Broken window in Room 204"
+                // placeholder="e.g. Broken window in Room 204"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="portal-input mt-1.5"
@@ -101,12 +116,53 @@ function RaiseTicket() {
               <textarea
                 id="description"
                 rows={5}
-                placeholder="Provide details about the issue: timing, severity, and anything staff should know..."
+                // placeholder="Provide details about the issue: timing, severity, and anything staff should know..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="portal-input mt-1.5 resize-none"
                 required
               />
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label htmlFor="hostel-block" className="portal-label">Hostel Block *</label>
+                <div className="relative mt-1.5">
+                  <select
+                    id="hostel-block"
+                    value={hostelBlock}
+                    onChange={(e) => setHostelBlock(e.target.value)}
+                    className="portal-input appearance-none pr-10"
+                    required
+                  >
+                    <option value="">Select block</option>
+                    <option value="A">A Block</option>
+                    <option value="B">B Block</option>
+                    <option value="C">C Block</option>
+                    <option value="D">D Block</option>
+                   
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-brandText-muted">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m19 9-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="room-number" className="portal-label">Room Number *</label>
+                <input
+                  id="room-number"
+                  type="text"
+                  value={roomNumber}
+                  onChange={(e) => setRoomNumber(e.target.value)}
+                  // placeholder="e.g. 204, A-305"
+                  maxLength={20}
+                  className="portal-input mt-1.5"
+                  required
+                />
+              </div>
             </div>
 
             <div>

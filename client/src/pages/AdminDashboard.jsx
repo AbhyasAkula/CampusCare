@@ -131,7 +131,7 @@ function AdminDashboard() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-brandText">{c.title}</p>
                       <p className="mt-0.5 truncate text-xs text-brandText-muted">
-                        {c.student?.name || "Unknown"} / {c.block || "N/A"} {c.room || "N/A"} / {new Date(c.createdAt).toLocaleDateString()}
+                        {c.student?.name || "Unknown"} / Block {c.hostelBlock || c.block || "N/A"} / Room {c.roomNumber || c.room || "N/A"} / {new Date(c.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

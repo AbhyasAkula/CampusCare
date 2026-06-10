@@ -288,7 +288,7 @@ function Register() {
                 </button>
               </div>
 
-              <div className="mt-3">
+              {/* <div className="mt-3">
                 <div className="flex items-center justify-between text-xs font-medium">
                   <span className="text-brandText-muted">Password strength</span>
                   <span className={`${strengthTextClasses[passwordStrength.label] || "text-brandText-muted"}`}>
@@ -301,7 +301,7 @@ function Register() {
                     style={{ width: `${(passwordStrength.score / 3) * 100}%` }}
                   />
                 </div>
-              </div>
+              </div> */}
 
               {shouldShowError("password") ? (
                 <p id="password-error" className="mt-1.5 text-xs font-medium text-status-error">
@@ -309,7 +309,7 @@ function Register() {
                 </p>
               ) : (
                 <p className="mt-2 text-[11px] leading-relaxed text-brandText-muted">
-                  Use 8-64 characters with uppercase, lowercase, number, and special character.
+                  {/* Use 8-64 characters with uppercase, lowercase, number, and special character. */}
                 </p>
               )}
             </div>

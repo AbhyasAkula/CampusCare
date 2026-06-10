@@ -25,7 +25,7 @@ function ProtectedRoute({ children, role }) {
         } else {
           setStatus("forbidden");
         }
-      } catch (err) {
+      } catch {
         setStatus("unauthorized");
       }
     };
@@ -49,7 +49,7 @@ function ProtectedRoute({ children, role }) {
 
   // Logged in but wrong role
   if (status === "forbidden") {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // Allowed

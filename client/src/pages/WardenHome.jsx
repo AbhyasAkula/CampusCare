@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/axios";
+import socket from "../utils/socket";
+import toast from "react-hot-toast";
 
 function WardenHome() {
   const navigate = useNavigate();
@@ -25,6 +27,67 @@ function WardenHome() {
   };
 
   useEffect(() => { loadComplaints(); }, []);
+
+  useEffect(() => {
+    const handleNewComplaint = (complaint) => {
+      const block = complaint.hostelBlock || complaint.block || "N/A";
+      const room = complaint.roomNumber || complaint.room || "N/A";
+      setRecent((prev) => {
+        if (prev.some((item) => item._id === complaint._id)) return prev;
+        return [complaint, ...prev].slice(0, 6);
+      });
+      setStats((prev) => ({
+        ...prev,
+        total: prev.total + 1,
+        pending: prev.pending + (complaint.status === "Pending" ? 1 : 0),
+        progress: prev.progress + (complaint.status === "In Progress" ? 1 : 0),
+        resolved: prev.resolved + (complaint.status === "Resolved" ? 1 : 0),
+      }));
+      toast.success(`New complaint received: ${complaint.title} - Block ${block}, Room ${room}`);
+    };
+
+    socket.on("newComplaint", handleNewComplaint);
+    return () => socket.off("newComplaint", handleNewComplaint);
+  }, []);
+
+  useEffect(() => {
+    const handleMessageActivity = ({ complaintId, senderRole, unreadCount, wardenUnreadCount, isNewForWarden }) => {
+      if (senderRole !== "student") return;
+      const nextUnreadCount = Number(wardenUnreadCount ?? unreadCount ?? 0);
+      setRecent((prev) =>
+        prev.map((complaint) =>
+          complaint._id === complaintId
+            ? {
+                ...complaint,
+                wardenUnreadCount: nextUnreadCount,
+                isNewForWarden: Boolean(isNewForWarden),
+              }
+            : complaint
+        )
+      );
+    };
+    const handleRead = ({ complaintId, role, isNewForWarden }) => {
+      if (role !== "warden") return;
+      setRecent((prev) =>
+        prev.map((complaint) =>
+          complaint._id === complaintId
+            ? {
+                ...complaint,
+                wardenUnreadCount: 0,
+                isNewForWarden,
+              }
+            : complaint
+        )
+      );
+    };
+
+    socket.on("complaintMessageActivity", handleMessageActivity);
+    socket.on("complaintRead", handleRead);
+    return () => {
+      socket.off("complaintMessageActivity", handleMessageActivity);
+      socket.off("complaintRead", handleRead);
+    };
+  }, []);
 
   const getStatusCls = (status) => {
     if (status === "Pending") return "status-badge status-pending";
@@ -110,7 +173,10 @@ function WardenHome() {
             </div>
           ) : (
             <ul className="divide-y divide-brandBorder">
-              {recent.map((c) => (
+              {recent.map((c) => {
+                const wardenUnreadCount = Number(c.wardenUnreadCount || 0);
+
+                return (
                 <li
                   key={c._id}
                   onClick={() => navigate(`/complaint/${c._id}/chat`)}
@@ -121,18 +187,35 @@ function WardenHome() {
                       #{c._id.slice(-4).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-brandText">{c.title}</p>
-                      <p className="mt-0.5 text-xs text-brandText-muted">Block {c.block || "N/A"} / Room {c.room || "N/A"}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="truncate text-sm font-semibold text-brandText">{c.title}</p>
+                        {c.isNewForWarden && (
+                          <span className="status-badge border-primary/20 bg-primary/10 text-primary">NEW</span>
+                        )}
+                      </div>
+                      <p className="mt-0.5 text-xs text-brandText-muted">
+                        Block {c.hostelBlock || c.block || "N/A"} / Room {c.roomNumber || c.room || "N/A"}
+                      </p>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
                     <span className={getStatusCls(c.status)}>{c.status}</span>
+                    <span
+                      className={
+                        wardenUnreadCount > 0
+                          ? "inline-flex items-center justify-center rounded-lg border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/15"
+                          : "portal-button-secondary text-xs px-3 py-1.5"
+                      }
+                    >
+                      {wardenUnreadCount > 0 ? `${wardenUnreadCount} New` : "Chat"}
+                    </span>
                     <svg className="h-4 w-4 text-brandText-muted" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>

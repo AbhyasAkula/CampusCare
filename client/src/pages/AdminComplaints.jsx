@@ -146,7 +146,7 @@ function AdminComplaints() {
                       <p className="mt-0.5 text-xs">{c.student?.email || "No email available"}</p>
                     </td>
                     <td className="px-6 py-4 text-sm text-brandText-muted">
-                      Block {c.block || "N/A"}, Room {c.room || "N/A"}
+                      Block {c.hostelBlock || c.block || "N/A"}, Room {c.roomNumber || c.room || "N/A"}
                     </td>
                     <td className="px-6 py-4">
                       {c.image ? (

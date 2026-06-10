@@ -21,6 +21,33 @@ const complaintSchema = new mongoose.Schema({
       default: "",
     },
 
+    studentUnreadCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    wardenUnreadCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    isNewForWarden: {
+      type: Boolean,
+      default: false,
+    },
+
+    hostelBlock: {
+      type: String,
+      trim: true,
+      maxlength: 20,
+    },
+    roomNumber: {
+      type: String,
+      trim: true,
+      maxlength: 20,
+    },
+
+    // Legacy fields retained for existing complaint records.
     block: String,
     room: String,
   

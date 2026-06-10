@@ -210,7 +210,10 @@ function WardenDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-brandBorder bg-surface">
-                  {complaints.map((c) => (
+                  {complaints.map((c) => {
+                    const wardenUnreadCount = Number(c.wardenUnreadCount || 0);
+
+                    return (
                     <tr key={c._id} className="transition hover:bg-[#F8FAFC]">
                       <td className="px-6 py-4">
                         <div className="flex items-start gap-3">
@@ -228,6 +231,9 @@ function WardenDashboard() {
                           <div className="min-w-0">
                             <p className="truncate font-semibold text-brandText">{c.title}</p>
                             <p className="mt-0.5 line-clamp-2 max-w-lg text-xs text-brandText-muted">{c.description}</p>
+                            <p className="mt-1 text-xs text-brandText-muted">
+                              Block {c.hostelBlock || c.block || "N/A"} / Room {c.roomNumber || c.room || "N/A"}
+                            </p>
                           </div>
                         </div>
                       </td>
@@ -257,13 +263,21 @@ function WardenDashboard() {
                           <button onClick={() => updateStatus(c._id)} className="portal-button-primary px-3 py-1.5 text-xs">
                             Update
                           </button>
-                          <button onClick={() => navigate(`/complaint/${c._id}/chat`)} className="portal-button-secondary px-3 py-1.5 text-xs">
-                            Chat
+                          <button
+                            onClick={() => navigate(`/complaint/${c._id}/chat`)}
+                            className={
+                              wardenUnreadCount > 0
+                                ? "inline-flex items-center justify-center rounded-lg border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/15"
+                                : "portal-button-secondary px-3 py-1.5 text-xs"
+                            }
+                          >
+                            {wardenUnreadCount > 0 ? `${wardenUnreadCount} New` : "Chat"}
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

@@ -164,7 +164,7 @@ function StudentHome() {
           Welcome back, {user.name.split(" ")[0]}
         </h1>
         <p className="mt-1 text-sm font-medium text-brandText-muted">
-          Track complaints, monitor updates, and manage hostel requests.
+          {/* Track complaints, monitor updates, and manage hostel requests. */}
         </p>
       </header>
 
@@ -275,7 +275,7 @@ function StudentHome() {
                 <p className="text-xs font-medium text-brandText-muted">Latest hostel updates</p>
               </div>
               <span className="status-badge bg-primary/10 text-primary border-primary/20">
-                {notices.length} New
+                {notices.length} 
               </span>
             </div>
 

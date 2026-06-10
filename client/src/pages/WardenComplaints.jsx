@@ -27,12 +27,58 @@ function WardenComplaints() {
   useEffect(() => { loadComplaints(); }, []);
 
   useEffect(() => {
-    socket.on("newComplaint", (complaint) => {
-      toast.success(`New Complaint: ${complaint.title}`);
-      setComplaints((prev) => [complaint, ...prev]);
+    const handleNewComplaint = (complaint) => {
+      const block = complaint.hostelBlock || complaint.block || "N/A";
+      const room = complaint.roomNumber || complaint.room || "N/A";
+      toast.success(`New complaint received: ${complaint.title} - Block ${block}, Room ${room}`);
+      setComplaints((prev) => {
+        if (prev.some((item) => item._id === complaint._id)) return prev;
+        return [complaint, ...prev];
+      });
       setStatusMap((prev) => ({ ...prev, [complaint._id]: complaint.status }));
-    });
-    return () => { socket.off("newComplaint"); };
+    };
+
+    socket.on("newComplaint", handleNewComplaint);
+    return () => socket.off("newComplaint", handleNewComplaint);
+  }, []);
+
+  useEffect(() => {
+    const handleMessageActivity = ({ complaintId, senderRole, unreadCount, wardenUnreadCount, isNewForWarden }) => {
+      if (senderRole !== "student") return;
+      const nextUnreadCount = Number(wardenUnreadCount ?? unreadCount ?? 0);
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === complaintId
+            ? {
+                ...complaint,
+                wardenUnreadCount: nextUnreadCount,
+                isNewForWarden: Boolean(isNewForWarden),
+              }
+            : complaint
+        )
+      );
+    };
+    const handleRead = ({ complaintId, role, isNewForWarden }) => {
+      if (role !== "warden") return;
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === complaintId
+            ? {
+                ...complaint,
+                wardenUnreadCount: 0,
+                isNewForWarden,
+              }
+            : complaint
+        )
+      );
+    };
+
+    socket.on("complaintMessageActivity", handleMessageActivity);
+    socket.on("complaintRead", handleRead);
+    return () => {
+      socket.off("complaintMessageActivity", handleMessageActivity);
+      socket.off("complaintRead", handleRead);
+    };
   }, []);
 
   const updateStatus = async (id) => {
@@ -103,7 +149,10 @@ function WardenComplaints() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-brandBorder bg-surface">
-                {filteredComplaints.map((c) => (
+                {filteredComplaints.map((c) => {
+                  const wardenUnreadCount = Number(c.wardenUnreadCount || 0);
+
+                  return (
                   <tr key={c._id} className="transition hover:bg-slate-50">
                     <td className="px-6 py-4 max-w-xs">
                       <div className="flex items-start gap-3">
@@ -117,14 +166,21 @@ function WardenComplaints() {
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="font-semibold text-brandText line-clamp-1">{c.title}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-brandText line-clamp-1">{c.title}</p>
+                            {c.isNewForWarden && (
+                              <span className="status-badge border-primary/20 bg-primary/10 text-primary">NEW</span>
+                            )}
+                          </div>
                           <p className="mt-0.5 text-xs text-brandText-muted line-clamp-2">{c.description}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-xs text-brandText-muted">
                       <p className="font-semibold text-brandText">{c.student?.name || "Unknown student"}</p>
-                      <p className="mt-0.5">Block {c.block || "N/A"} / Room {c.room || "N/A"}</p>
+                      <p className="mt-0.5">
+                        Block {c.hostelBlock || c.block || "N/A"} / Room {c.roomNumber || c.room || "N/A"}
+                      </p>
                     </td>
                     <td className="px-6 py-4">
                       <span className={getStatusCls(c.status)}>{c.status}</span>
@@ -155,14 +211,19 @@ function WardenComplaints() {
                         </button>
                         <button
                           onClick={() => navigate(`/complaint/${c._id}/chat`)}
-                          className="portal-button-secondary text-xs px-3 py-1.5"
+                          className={
+                            wardenUnreadCount > 0
+                              ? "inline-flex items-center justify-center rounded-lg border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/15"
+                              : "portal-button-secondary text-xs px-3 py-1.5"
+                          }
                         >
-                          Chat
+                          {wardenUnreadCount > 0 ? `${wardenUnreadCount} New` : "Chat"}
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

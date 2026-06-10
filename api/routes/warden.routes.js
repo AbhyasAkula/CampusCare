@@ -4,6 +4,16 @@ const Complaint = require("../models/Complaint");
 const Notice = require("../models/Notice");
 const { protect, role } = require("../middleware/auth");
 
+const serializeComplaint = (complaint) => {
+  const data = complaint.toObject ? complaint.toObject() : complaint;
+
+  return {
+    ...data,
+    studentUnreadCount: data.studentUnreadCount || 0,
+    wardenUnreadCount: data.wardenUnreadCount || 0,
+    isNewForWarden: Boolean(data.isNewForWarden),
+  };
+};
 
 /* =========================
    NOTICE ROUTES FIRST
@@ -83,7 +93,7 @@ router.get("/", protect, role("warden"), async (req, res) => {
     const complaints = await Complaint.find()
       .populate("student", "name email");
 
-    res.json(complaints);
+    res.json(complaints.map(serializeComplaint));
 
   } catch (err) {
     res.status(500).json({ msg: "Failed to load complaints" });
@@ -118,7 +128,7 @@ router.put("/:id", protect, role("warden"), async (req, res) => {
       });
     }
 
-    res.json(complaint);
+    res.json(serializeComplaint(complaint));
 
   } catch (err) {
     res.status(500).json({ msg: "Server error" });

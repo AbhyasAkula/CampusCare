@@ -12,27 +12,63 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+const serializeComplaint = (complaint) => {
+  const data = complaint.toObject ? complaint.toObject() : complaint;
+
+  return {
+    ...data,
+    studentUnreadCount: data.studentUnreadCount || 0,
+    wardenUnreadCount: data.wardenUnreadCount || 0,
+    isNewForWarden: Boolean(data.isNewForWarden),
+  };
+};
+
 /* ================= ADD COMPLAINT ================= */
 
 router.post("/", protect, upload.single("image"), async (req, res) => {
   try {
+    const hostelBlock = (req.body.hostelBlock || req.body.block)?.trim();
+    const roomNumber = (req.body.roomNumber || req.body.room)?.trim();
+    const allowedBlocks = ["A", "B", "C", "D", "E", "Other"];
+
+    if (hostelBlock && !allowedBlocks.includes(hostelBlock)) {
+      return res.status(400).json({ message: "Select a valid hostel block" });
+    }
+
+    if (Boolean(hostelBlock) !== Boolean(roomNumber)) {
+      return res.status(400).json({
+        message: "Hostel block and room number must be provided together",
+      });
+    }
+
+    if (roomNumber && roomNumber.length > 20) {
+      return res.status(400).json({ message: "Enter a valid room number" });
+    }
 
     const complaint = await Complaint.create({
       student: req.user.id,
       title: req.body.title,
       description: req.body.description,
       image: req.file ? req.file.filename : "",
-      block: req.body.block,
-      room: req.body.room
+      hostelBlock,
+      roomNumber,
+      block: hostelBlock,
+      room: roomNumber,
+      studentUnreadCount: 0,
+      wardenUnreadCount: 0,
+      isNewForWarden: true,
     });
+
+    await complaint.populate("student", "name email");
+    const responseComplaint = serializeComplaint(complaint);
 
     /* ===== REALTIME EVENT TO WARDENS ===== */
 
     const io = req.app.get("io");
 
-    io.to("wardens").emit("newComplaint", complaint);
+    io.to("wardens").emit("newComplaint", responseComplaint);
 
-    res.json(complaint);
+    res.json(responseComplaint);
 
   } catch (err) {
     res.status(500).json({ message: "Failed to create complaint" });
@@ -48,7 +84,7 @@ router.get("/my", protect, async (req, res) => {
     .find({ student: req.user.id })
     .sort({ createdAt: -1 });
 
-  res.json(complaints);
+  res.json(complaints.map(serializeComplaint));
 
 });
 
@@ -65,7 +101,7 @@ router.get("/:id", protect, async (req, res) => {
       return res.status(404).json({ message: "Complaint not found" });
     }
 
-    res.json(complaint);
+    res.json(serializeComplaint(complaint));
 
   } catch (err) {
     res.status(500).json({ message: "Failed to load complaint" });

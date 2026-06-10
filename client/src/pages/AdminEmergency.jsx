@@ -55,9 +55,9 @@ function AdminEmergency() {
       <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-brandText">Emergency Contacts</h1>
-          <p className="mt-1 text-sm font-medium text-brandText-muted">
+          {/* <p className="mt-1 text-sm font-medium text-brandText-muted">
             Maintain phone numbers students can access during urgent situations.
-          </p>
+          </p> */}
         </div>
         <span className="status-badge status-neutral self-start">
           {contacts.length} contact{contacts.length !== 1 ? "s" : ""}
@@ -76,7 +76,7 @@ function AdminEmergency() {
                 <label className="portal-label">Contact Title</label>
                 <input
                   type="text"
-                  placeholder="e.g. Chief Warden"
+                  // placeholder="e.g. Chief Warden"
                   className="portal-input mt-1.5"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -87,7 +87,7 @@ function AdminEmergency() {
                 <label className="portal-label">Phone Number</label>
                 <input
                   type="text"
-                  placeholder="e.g. +91 9876543210"
+                  // placeholder="e.g. +91 9876543210"
                   className="portal-input mt-1.5"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}

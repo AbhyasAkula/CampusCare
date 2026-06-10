@@ -39,14 +39,27 @@ function Profile() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-5xl space-y-6">
-        <div className="skeleton h-7 w-40 rounded-md" />
-        <div className="portal-panel p-6">
-          <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-            <div className="skeleton h-64 rounded-xl" />
-            <div className="space-y-4">
-              <div className="skeleton h-28 rounded-xl" />
-              <div className="skeleton h-28 rounded-xl" />
+      <div className="portal-shell px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl space-y-6">
+          <div className="space-y-3">
+            <div className="skeleton h-4 w-32 rounded-md" />
+            <div className="skeleton h-8 w-56 rounded-md" />
+            <div className="skeleton h-4 w-80 max-w-full rounded-md" />
+          </div>
+          <div className="grid gap-5 md:grid-cols-[280px_minmax(0,1fr)]">
+            <div className="portal-panel p-6">
+              <div className="skeleton mx-auto h-20 w-20 rounded-full" />
+              <div className="skeleton mx-auto mt-4 h-5 w-36 rounded-md" />
+              <div className="skeleton mx-auto mt-2 h-4 w-48 rounded-md" />
+              <div className="skeleton mt-6 h-10 w-full rounded-lg" />
+            </div>
+            <div className="portal-panel p-6">
+              <div className="skeleton h-5 w-44 rounded-md" />
+              <div className="mt-6 space-y-5">
+                <div className="skeleton h-14 w-full rounded-lg" />
+                <div className="skeleton h-14 w-full rounded-lg" />
+                <div className="skeleton h-14 w-full rounded-lg" />
+              </div>
             </div>
           </div>
         </div>
@@ -57,108 +70,106 @@ function Profile() {
   const homeRoute = user.role === "admin" ? "/admin" : user.role === "warden" ? "/warden" : "/student";
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      {/* Page Header */}
-      <header className="flex items-center gap-3">
-        <button onClick={() => navigate(homeRoute)} className="portal-button-secondary">
-          Back
-        </button>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-brandText">Account Settings</h1>
-          <p className="mt-0.5 text-sm text-brandText-muted">Manage your profile and account details.</p>
-        </div>
-      </header>
+    <div className="portal-shell px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl">
+        <header className="mb-6">
+          <button
+            type="button"
+            onClick={() => navigate(homeRoute)}
+            className="group mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-brandText-muted transition hover:text-brandText focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          >
+            <svg className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+            </svg>
+            Back to Dashboard
+          </button>
+          <h1 className="text-2xl font-bold tracking-tight text-brandText sm:text-3xl">Account Settings</h1>
+          <p className="mt-1 text-sm text-brandText-muted">Manage your profile and account preferences.</p>
+        </header>
 
-      <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-        {/* Sidebar: Avatar and upload */}
-        <aside className="portal-panel overflow-hidden">
-          <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-6 text-center">
-            <img
-              src={
-                user.profilePic
-                  ? `http://localhost:5000/uploads/${user.profilePic}`
-                  : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=EEF2FF&color=2563EB`
-              }
-              alt="Profile"
-              className="mx-auto h-24 w-24 rounded-full border-4 border-surface shadow-sm object-cover"
-            />
-            <h2 className="mt-4 text-base font-bold text-brandText">{user.name}</h2>
-            <span className="mt-1 inline-flex items-center rounded-full border border-brandBorder bg-surface px-2.5 py-0.5 text-xs font-semibold capitalize text-brandText-muted">
-              {user.role}
-            </span>
-          </div>
+        <div className="grid items-start gap-5 md:grid-cols-[280px_minmax(0,1fr)]">
+          <aside className="portal-panel p-6">
+            <div className="text-center">
+              <img
+                src={
+                  user.profilePic
+                    ? `http://localhost:5000/uploads/${user.profilePic}`
+                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=EEF2FF&color=2563EB`
+                }
+                alt={`${user.name} profile`}
+                className="mx-auto h-20 w-20 rounded-full border border-brandBorder object-cover shadow-sm"
+              />
+              <h2 className="mt-3 text-base font-bold text-brandText">{user.name}</h2>
+              <p className="mt-1 truncate text-sm text-brandText-muted">{user.email || "Email not available"}</p>
+              <span className="status-badge status-neutral mt-3 capitalize">{user.role}</span>
+            </div>
 
-          <div className="space-y-4 px-6 py-5">
-            <div>
-              <label className="portal-label">Update Profile Photo</label>
+            <div className="mt-6 border-t border-brandBorder pt-5">
               <label
                 htmlFor="profile-upload"
-                className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brandBorder bg-[#F8FAFC] px-4 py-4 text-center transition hover:border-primary hover:bg-white"
+                className="portal-button-secondary w-full cursor-pointer"
               >
-                <svg className="h-4 w-4 text-brandText-muted" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7H3.75A2.25 2.25 0 0 0 1.5 9.25v9A2.25 2.25 0 0 0 3.75 20.5h16.5a2.25 2.25 0 0 0 2.25-2.25v-9A2.25 2.25 0 0 0 20.25 7h-1.436a2.31 2.31 0 0 1-1.64-.825l-.65-.75A2.31 2.31 0 0 0 14.883 4.6H9.117a2.31 2.31 0 0 0-1.64.825l-.65.75Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 13.75a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
                 </svg>
-                <span className="text-sm font-semibold text-brandText">
-                  {file ? file.name : "Choose image"}
-                </span>
-                <input id="profile-upload" type="file" className="sr-only" onChange={(e) => setFile(e.target.files[0])} accept="image/*" />
+                Change profile image
+                <input
+                  id="profile-upload"
+                  type="file"
+                  className="sr-only"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  accept="image/*"
+                />
               </label>
-            </div>
-            <button
-              onClick={handleUpload}
-              disabled={!file || isUploading}
-              className="portal-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isUploading ? "Saving..." : "Save Photo"}
-            </button>
-          </div>
-        </aside>
 
-        {/* Main Content */}
-        <div className="space-y-5">
-          {/* Personal Information */}
-          <section className="portal-panel overflow-hidden">
-            <div className="portal-section-head">
-              <div>
-                <h2 className="text-sm font-semibold text-brandText">Personal Information</h2>
-                <p className="mt-0.5 text-xs text-brandText-muted">Your registered hostel account details</p>
-              </div>
+              {file ? (
+                <div className="mt-3">
+                  <p className="truncate text-xs text-brandText-muted" title={file.name}>
+                    Selected: {file.name}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleUpload}
+                    disabled={isUploading}
+                    className="portal-button-primary mt-3 w-full disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isUploading ? "Saving..." : "Save new image"}
+                  </button>
+                </div>
+              ) : (
+                <p className="mt-3 text-center text-xs leading-5 text-brandText-muted">
+                  {/* JPG, PNG, or other supported image formats. */}
+                </p>
+              )}
             </div>
-            <div className="grid gap-px bg-brandBorder sm:grid-cols-2">
+          </aside>
+
+          <section className="portal-panel overflow-hidden">
+            <div className="border-b border-brandBorder px-6 py-5">
+              <h2 className="text-base font-bold text-brandText">Account Information</h2>
+              <p className="mt-1 text-sm text-brandText-muted">Your primary account and identity details.</p>
+            </div>
+
+            <dl className="divide-y divide-brandBorder">
               {[
                 { label: "Full Name", value: user.name },
-                { label: "Email Address", value: user.email || "Not available" },
-                { label: "Role", value: user.role },
-                { label: "Hostel Block", value: user.block ? `Block ${user.block}` : "Not assigned" },
-                { label: "Room Number", value: user.room ? `Room ${user.room}` : "Not assigned" },
+                { label: "Email", value: user.email || "Not available" },
+                { label: "Role", value: user.role, capitalize: true },
               ].map((item) => (
-                <div key={item.label} className="bg-surface px-5 py-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-brandText-muted">{item.label}</p>
-                  <p className="mt-1.5 text-sm font-semibold text-brandText capitalize">{item.value}</p>
+                <div key={item.label} className="px-6 py-5 sm:grid sm:grid-cols-[140px_minmax(0,1fr)] sm:items-center sm:gap-6">
+                  <dt className="text-sm font-medium text-brandText-muted">{item.label}</dt>
+                  <dd className={`mt-1 text-sm font-semibold text-brandText sm:mt-0 ${item.capitalize ? "capitalize" : ""}`}>
+                    {item.value}
+                  </dd>
                 </div>
               ))}
-            </div>
-          </section>
+            </dl>
 
-          {/* Complaint Overview */}
-          <section className="portal-panel overflow-hidden">
-            <div className="portal-section-head">
-              <div>
-                <h2 className="text-sm font-semibold text-brandText">Complaint Overview</h2>
-                <p className="mt-0.5 text-xs text-brandText-muted">Summary of your complaint activity</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 divide-x divide-brandBorder">
-              {[
-                { label: "Total", value: user.totalComplaints || 0 },
-                { label: "Pending", value: user.pendingComplaints || 0 },
-                { label: "Resolved", value: user.resolvedComplaints || 0 },
-              ].map((item) => (
-                <div key={item.label} className="px-6 py-5 text-center">
-                  <p className="text-3xl font-bold tracking-tight text-brandText">{item.value}</p>
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-brandText-muted">{item.label}</p>
-                </div>
-              ))}
+            <div className="border-t border-brandBorder bg-slate-50/60 px-6 py-4">
+              <p className="text-xs leading-5 text-brandText-muted">
+                Account information is managed by your organization. Contact an administrator if these details need to be updated.
+              </p>
             </div>
           </section>
         </div>

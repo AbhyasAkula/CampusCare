@@ -225,7 +225,7 @@ function Login() {
             </div>
 
             <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <input
                   id="remember-me"
                   name="remember-me"
@@ -235,7 +235,7 @@ function Login() {
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-brandText-muted">
                   Remember me
                 </label>
-              </div>
+              </div> */}
 
               <div className="text-sm">
                 <a href="#" className="font-medium text-primary hover:text-primary-hover">

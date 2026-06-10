@@ -1,39 +1,44 @@
 import socket from "./socket";
 import API from "./axios";
 
-export const initializeSocket = async () => {
+let activeUser = null;
 
-  try {
+const joinActiveUserRooms = () => {
+  if (!activeUser) return;
 
-    const res = await API.get("/profile");
+  socket.emit("joinRoom", activeUser._id);
 
-    const { _id, role } = res.data;
-
-    socket.connect();
-
-    /* PERSONAL ROOM */
-
-    socket.emit("joinRoom", _id);
-
-    console.log("Joined personal room:", _id);
-
-    /* STUDENTS BROADCAST */
-
-    if (role === "student") {
-      socket.emit("joinStudents");
-    }
-
-    /* WARDENS ROOM */
-
-    if (role === "warden") {
-      socket.emit("joinWardens");
-      console.log("Joined wardens room");
-    }
-
-  } catch (err) {
-
-    console.log("Socket init error", err);
-
+  if (activeUser.role === "student") {
+    socket.emit("joinStudents");
   }
 
+  if (activeUser.role === "warden") {
+    socket.emit("joinWardens");
+  }
+};
+
+export const initializeSocket = async (user) => {
+  try {
+    activeUser = user || (await API.get("/profile")).data;
+
+    socket.off("connect", joinActiveUserRooms);
+    socket.on("connect", joinActiveUserRooms);
+
+    if (socket.connected) {
+      joinActiveUserRooms();
+    } else {
+      socket.connect();
+    }
+
+    return activeUser;
+  } catch (error) {
+    console.error("Socket init error", error);
+    return null;
+  }
+};
+
+export const disconnectSocket = () => {
+  activeUser = null;
+  socket.off("connect", joinActiveUserRooms);
+  socket.disconnect();
 };

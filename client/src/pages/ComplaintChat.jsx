@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../utils/axios";
 import socket from "../utils/socket";
@@ -10,24 +10,45 @@ function ComplaintChat() {
   const [text, setText] = useState("");
   const [complaint, setComplaint] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  const loadUser = async () => { const res = await API.get("/profile"); setUserId(res.data._id); };
-  const loadComplaint = async () => { const res = await API.get(`/complaints/${id}`); setComplaint(res.data); };
-  const loadMessages = async () => { const res = await API.get(`/chat/${id}`); setMessages(res.data); };
+  const loadComplaint = useCallback(async () => {
+    const res = await API.get(`/complaints/${id}`);
+    setComplaint(res.data);
+  }, [id]);
+  const loadMessages = useCallback(async () => {
+    const res = await API.get(`/chat/${id}`);
+    setMessages(res.data);
+  }, [id]);
+  const markAsRead = useCallback(async () => {
+    try {
+      await API.put(`/chat/${id}/read`);
+    } catch (error) {
+      console.error("Failed to mark complaint messages as read", error);
+    }
+  }, [id]);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([loadUser(), loadComplaint(), loadMessages()]);
+      const profileRequest = API.get("/profile");
+      const [, , profileRes] = await Promise.all([
+        loadComplaint(),
+        loadMessages(),
+        profileRequest,
+      ]);
+      setUserId(profileRes.data._id);
+      setUserRole(profileRes.data.role);
+      await markAsRead();
       setLoading(false);
     };
     loadData();
     socket.emit("joinComplaintRoom", id);
-  }, [id]);
+  }, [id, loadComplaint, loadMessages, markAsRead]);
 
   useEffect(() => {
     const handleReceive = (msg) => {
@@ -35,10 +56,13 @@ function ComplaintChat() {
         const exists = prev.some((m) => m._id === msg._id);
         return exists ? prev : [...prev, msg];
       });
+      if (userRole && msg.senderRole !== userRole) {
+        markAsRead();
+      }
     };
     socket.on("receiveMessage", handleReceive);
     return () => socket.off("receiveMessage", handleReceive);
-  }, []);
+  }, [id, markAsRead, userRole]);
 
   useEffect(() => { scrollToBottom(); }, [messages]);
 
@@ -83,6 +107,11 @@ function ComplaintChat() {
             <span className="text-[11px] font-medium uppercase tracking-widest text-brandText-muted">
               #{id.slice(-6).toUpperCase()}
             </span>
+            {complaint && (
+              <span className="text-[11px] font-medium text-brandText-muted">
+                Block {complaint.hostelBlock || complaint.block || "N/A"} / Room {complaint.roomNumber || complaint.room || "N/A"}
+              </span>
+            )}
           </div>
         </div>
       </div>
