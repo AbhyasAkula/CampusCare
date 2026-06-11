@@ -81,12 +81,12 @@ function DashboardLayout() {
 
   return (
     <div className="portal-shell">
-      <nav className="sticky top-0 z-50 border-b border-brandBorder bg-surface">
+      <nav className="sticky top-0 z-50 border-b border-brandBorder bg-surface/95 shadow-[0_1px_2px_rgba(15,23,42,0.04)] backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-[0_8px_18px_rgba(37,99,235,0.22)]">
                   <span className="text-sm font-bold">C</span>
                 </div>
                 <div>
@@ -135,7 +135,7 @@ function DashboardLayout() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen((prev) => !prev)}
-                  className="flex items-center gap-2 rounded-full p-1 pr-2 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="flex items-center gap-2 rounded-full border border-transparent p-1 pr-2 transition hover:border-brandBorder hover:bg-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <img
                     src={user.profilePic ? `http://localhost:5000/uploads/${user.profilePic}` : "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
@@ -149,7 +149,7 @@ function DashboardLayout() {
                 </button>
 
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-xl border border-brandBorder bg-surface py-1 shadow-lg shadow-slate-200/50">
+                  <div className="absolute right-0 mt-2 w-56 rounded-xl border border-brandBorder bg-surface py-1 shadow-[0_18px_50px_rgba(15,23,42,0.14)]">
                     <div className="border-b border-brandBorder px-4 py-3">
                       <p className="text-xs font-medium text-brandText-muted">Signed in as</p>
                       <p className="truncate text-sm font-semibold text-brandText mt-0.5">{user.email || user.name}</p>

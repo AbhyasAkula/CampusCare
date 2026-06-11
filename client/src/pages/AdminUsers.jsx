@@ -59,7 +59,7 @@ function AdminUsers() {
             Manage hostel students, wardens, and administrators.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:flex">
+        <div className="grid grid-cols-2 gap-2 rounded-xl border border-brandBorder bg-surface p-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:flex">
           {[
             { key: "all", label: "All" },
             { key: "student", label: "Students" },
@@ -72,8 +72,8 @@ function AdminUsers() {
               onClick={() => setRoleFilter(item.key)}
               className={`rounded-lg border px-3 py-2 text-left text-xs font-semibold transition ${
                 roleFilter === item.key
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-brandBorder bg-surface text-brandText-muted hover:bg-[#F1F5F9] hover:text-brandText"
+                  ? "border-primary bg-[#EFF6FF] text-primary shadow-sm"
+                  : "border-transparent bg-transparent text-brandText-muted hover:bg-[#F8FAFC] hover:text-brandText"
               }`}
             >
               {item.label}
@@ -143,7 +143,7 @@ function AdminUsers() {
                 <tr>
                   <td colSpan="5" className="px-6 py-14">
                     <div className="mx-auto max-w-sm text-center">
-                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F1F5F9] text-brandText-muted">
+                      <div className="empty-state-icon">
                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15.75 15.75 21 21m-3.75-9a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" />
                         </svg>

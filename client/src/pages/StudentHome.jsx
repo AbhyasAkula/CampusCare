@@ -175,7 +175,7 @@ function StudentHome() {
         </h2>
         <div className="grid gap-4 md:grid-cols-4">
           {overviewMetrics.map((item) => (
-            <div key={item.id} className="portal-panel p-5 transition-shadow hover:shadow-md">
+            <div key={item.id} className="enterprise-card">
               <div className="flex items-start justify-between">
                 <p className="text-sm font-semibold text-brandText">{item.label}</p>
                 {item.icon}
@@ -188,7 +188,7 @@ function StudentHome() {
                   {item.value > 0 ? "Active" : "Stable"}
                 </span>
                 <span className="text-xs font-medium text-brandText-muted">
-                  • {item.note}
+                  / {item.note}
                 </span>
               </div>
             </div>
@@ -204,7 +204,7 @@ function StudentHome() {
         <div className="grid gap-4 md:grid-cols-3">
           <a
             href="/student/raise"
-            className="portal-panel flex items-center gap-4 p-4 transition-all hover:border-primary hover:shadow-md group"
+            className="enterprise-card group flex items-center gap-4 p-4"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -222,7 +222,7 @@ function StudentHome() {
 
           <a
             href="/student/complaints"
-            className="portal-panel flex items-center gap-4 p-4 transition-all hover:border-primary hover:shadow-md group"
+            className="enterprise-card group flex items-center gap-4 p-4"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-brandText-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -243,7 +243,7 @@ function StudentHome() {
           <button
             type="button"
             onClick={scrollToEmergency}
-            className="portal-panel flex items-center gap-4 p-4 text-left transition-all hover:border-status-warning hover:shadow-md group"
+            className="enterprise-card group flex items-center gap-4 p-4 text-left hover:border-status-warning/50"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-status-warning/10 text-status-warning group-hover:bg-status-warning group-hover:text-white transition-colors">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -269,7 +269,7 @@ function StudentHome() {
         <div className="grid gap-4 lg:grid-cols-2">
           {/* Announcements Card */}
           <div className="portal-panel flex flex-col overflow-hidden h-[340px]">
-            <div className="flex items-center justify-between border-b border-brandBorder px-5 py-3 bg-slate-50/50">
+            <div className="flex items-center justify-between border-b border-brandBorder bg-[#F8FAFC] px-5 py-3">
               <div>
                 <h3 className="text-sm font-semibold text-brandText">Announcements</h3>
                 <p className="text-xs font-medium text-brandText-muted">Latest hostel updates</p>
@@ -282,7 +282,7 @@ function StudentHome() {
             <div className="flex-1 overflow-y-auto">
               {notices.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center p-6 text-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+                  <div className="empty-state-icon">
                     <svg className="h-6 w-6 text-brandText-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
@@ -314,7 +314,7 @@ function StudentHome() {
 
           {/* Emergency Contacts Card */}
           <div id="emergency-section" className="portal-panel flex flex-col overflow-hidden h-[340px]">
-            <div className="flex items-center justify-between border-b border-brandBorder px-5 py-3 bg-slate-50/50">
+            <div className="flex items-center justify-between border-b border-brandBorder bg-[#F8FAFC] px-5 py-3">
               <div>
                 <h3 className="text-sm font-semibold text-brandText">Emergency Contacts</h3>
                 <p className="text-xs font-medium text-brandText-muted">Important support numbers</p>
@@ -324,7 +324,7 @@ function StudentHome() {
             <div className="flex-1 overflow-y-auto">
               {contacts.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center p-6 text-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+                  <div className="empty-state-icon">
                     <svg className="h-6 w-6 text-brandText-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>

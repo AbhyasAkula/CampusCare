@@ -55,9 +55,9 @@ function AdminEmergency() {
       <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-brandText">Emergency Contacts</h1>
-          {/* <p className="mt-1 text-sm font-medium text-brandText-muted">
+          <p className="mt-1 text-sm font-medium text-brandText-muted">
             Maintain phone numbers students can access during urgent situations.
-          </p> */}
+          </p>
         </div>
         <span className="status-badge status-neutral self-start">
           {contacts.length} contact{contacts.length !== 1 ? "s" : ""}
@@ -125,7 +125,7 @@ function AdminEmergency() {
                     <tr>
                       <td colSpan="3" className="px-6 py-14">
                         <div className="mx-auto max-w-sm text-center">
-                          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F1F5F9] text-brandText-muted">
+                          <div className="empty-state-icon">
                             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25A2.25 2.25 0 0 0 21.75 19.5v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106a1.125 1.125 0 0 0-1.173.417l-.97 1.293a12.937 12.937 0 0 1-6.861-6.861l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102A1.125 1.125 0 0 0 5.872 2.25H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
                             </svg>

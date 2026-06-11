@@ -147,7 +147,7 @@ function WardenDashboard() {
             <div className="max-h-[420px] overflow-y-auto">
               {allNotices.length === 0 ? (
                 <div className="px-6 py-10 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F1F5F9] text-brandText-muted">
+                  <div className="empty-state-icon">
                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5.882V19.24a1.76 1.76 0 0 1-3.417.592l-2.147-6.15M18 13a3 3 0 1 0 0-6M5.436 13.683A4.001 4.001 0 0 1 7 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 0 1-1.564-.317Z" />
                     </svg>
@@ -190,7 +190,7 @@ function WardenDashboard() {
 
           {complaints.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F1F5F9] text-brandText-muted">
+              <div className="empty-state-icon">
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>

@@ -63,7 +63,7 @@ function RaiseTicket() {
 
       <div className="portal-panel overflow-hidden">
         {/* Card Header */}
-        <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-4">
+        <div className="border-b border-brandBorder bg-[#F8FAFC] px-6 py-4">
           <h2 className="text-sm font-semibold text-brandText">New Complaint</h2>
           {/* <p className="mt-0.5 text-xs text-brandText-muted">All fields marked with * are required.</p> */}
         </div>
@@ -169,7 +169,7 @@ function RaiseTicket() {
               <label className="portal-label">Photo Evidence <span className="font-normal text-brandText-muted">(Optional)</span></label>
               <label
                 htmlFor="file-upload"
-                className="mt-1.5 block cursor-pointer rounded-xl border-2 border-dashed border-brandBorder bg-[#F8FAFC] px-6 py-5 transition hover:border-primary hover:bg-white"
+                className="mt-1.5 block cursor-pointer rounded-xl border-2 border-dashed border-brandBorder bg-[#F8FAFC] px-6 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition hover:border-primary hover:bg-white hover:shadow-[0_8px_22px_rgba(15,23,42,0.06)]"
               >
                 {previewUrl ? (
                   <div className="space-y-3">

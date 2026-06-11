@@ -57,7 +57,7 @@ function WardenAnnouncements() {
 
       {/* Compose Card */}
       <div className="portal-panel overflow-hidden">
-        <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-4">
+        <div className="border-b border-brandBorder bg-[#F8FAFC] px-6 py-4">
           <h2 className="text-sm font-semibold text-brandText">Create Announcement</h2>
           {/* <p className="mt-0.5 text-xs text-brandText-muted">Announcements are broadcast in real-time to all logged-in students.</p> */}
         </div>
@@ -66,7 +66,7 @@ function WardenAnnouncements() {
             <div>
               <label className="portal-label">Title *</label>
               <input
-                placeholder="e.g. Scheduled Power Outage – Block A"
+                placeholder="e.g. Scheduled Power Outage - Block A"
                 value={notice.title}
                 onChange={(e) => setNotice({ ...notice, title: e.target.value })}
                 className="portal-input mt-1.5"
@@ -98,7 +98,7 @@ function WardenAnnouncements() {
 
       {/* Notice List */}
       <div className="portal-panel overflow-hidden">
-        <div className="flex items-center justify-between border-b border-brandBorder bg-slate-50/50 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-brandBorder bg-[#F8FAFC] px-6 py-4">
           <h2 className="text-sm font-semibold text-brandText">Posted Announcements</h2>
           <span className="status-badge bg-primary/10 text-primary border-primary/20">
             {allNotices.length} total
@@ -107,7 +107,7 @@ function WardenAnnouncements() {
 
         {allNotices.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-14 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+            <div className="empty-state-icon">
               <svg className="h-6 w-6 text-brandText-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
               </svg>

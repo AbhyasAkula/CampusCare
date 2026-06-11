@@ -39,23 +39,54 @@
   }
 
   .portal-panel {
-    @apply rounded-lg border border-brandBorder bg-surface shadow-sm;
+    @apply rounded-xl border border-brandBorder bg-surface shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)];
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease, background-color 180ms ease;
+  }
+
+  .portal-panel:hover {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 14px 34px rgba(15, 23, 42, 0.07);
+  }
+
+  .portal-panel table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .portal-panel thead {
+    background: #F8FAFC;
+  }
+
+  .portal-panel th {
+    @apply whitespace-nowrap text-[11px] font-bold uppercase text-brandText-muted;
+    letter-spacing: 0;
+  }
+
+  .portal-panel td {
+    @apply align-middle;
+  }
+
+  .portal-panel tbody tr {
+    transition: background-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .portal-panel tbody tr:hover {
+    background-color: #F8FAFC;
   }
 
   .portal-section-head {
-    @apply flex items-center justify-between gap-3 border-b border-brandBorder px-6 py-4;
+    @apply flex items-center justify-between gap-3 border-b border-brandBorder bg-[#F8FAFC] px-6 py-4;
   }
 
   .portal-button-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary;
+    @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(15,23,42,0.12),0_8px_18px_rgba(37,99,235,0.18)] transition hover:bg-primary-hover hover:shadow-[0_1px_2px_rgba(15,23,42,0.16),0_10px_22px_rgba(37,99,235,0.24)] active:translate-y-px active:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary;
   }
 
   .portal-button-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-brandBorder bg-surface px-4 py-2 text-sm font-semibold text-brandText transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary;
+    @apply inline-flex items-center justify-center rounded-lg border border-brandBorder bg-surface px-4 py-2 text-sm font-semibold text-brandText shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:border-slate-300 hover:bg-[#F8FAFC] hover:text-primary active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary;
   }
 
   .portal-input {
-    @apply block w-full rounded-lg border border-brandBorder bg-surface px-4 py-2.5 text-sm text-brandText outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 placeholder:text-brandText-muted;
+    @apply block w-full rounded-lg border border-brandBorder bg-surface px-4 py-2.5 text-sm font-medium text-brandText shadow-[0_1px_2px_rgba(15,23,42,0.03)] outline-none transition hover:border-slate-300 focus:border-primary focus:ring-4 focus:ring-primary/10 placeholder:text-brandText-muted;
   }
 
   .portal-label {
@@ -63,7 +94,25 @@
   }
 
   .status-badge {
-    @apply inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold;
+    @apply inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold leading-none;
+  }
+
+  .enterprise-card {
+    @apply rounded-xl border border-brandBorder bg-surface p-5 text-left shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.05)];
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease, background-color 180ms ease;
+  }
+
+  .enterprise-card:hover {
+    border-color: rgba(37, 99, 235, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .enterprise-icon {
+    @apply flex shrink-0 items-center justify-center rounded-lg border border-brandBorder bg-[#F8FAFC] text-brandText-muted;
+  }
+
+  .empty-state-icon {
+    @apply mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-brandBorder bg-[#F8FAFC] text-brandText-muted shadow-sm;
   }
 
   .status-pending {
@@ -96,6 +145,12 @@
 }
 
 @layer utilities {
+  .tracking-tight,
+  .tracking-wider,
+  .tracking-widest {
+    letter-spacing: 0;
+  }
+
   .skeleton {
     background-color: #dbe4f0;
     animation: skeletonPulse 1.4s ease-in-out infinite;

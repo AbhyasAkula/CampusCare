@@ -124,7 +124,7 @@ function WardenComplaints() {
 
       {filteredComplaints.length === 0 ? (
         <div className="portal-panel flex flex-col items-center justify-center py-16 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+          <div className="empty-state-icon h-14 w-14">
             <svg className="h-7 w-7 text-brandText-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -134,12 +134,12 @@ function WardenComplaints() {
         </div>
       ) : (
         <div className="portal-panel overflow-hidden">
-          <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-3">
+          <div className="border-b border-brandBorder bg-[#F8FAFC] px-6 py-3">
             <p className="text-sm font-semibold text-brandText">{filteredComplaints.length} complaint{filteredComplaints.length !== 1 ? "s" : ""}</p>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-brandBorder text-sm text-left">
-              <thead className="bg-slate-50/50">
+              <thead className="bg-[#F8FAFC]">
                 <tr className="text-xs font-semibold uppercase tracking-wider text-brandText-muted">
                   <th className="px-6 py-3">Complaint</th>
                   <th className="px-6 py-3">Student</th>

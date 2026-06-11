@@ -134,10 +134,10 @@ function Login() {
   const shouldShowError = (field) => touched[field] && errors[field];
 
   return (
-    <div className="portal-shell flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="portal-shell flex min-h-screen flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-[400px]">
         <div className="flex justify-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-[0_10px_24px_rgba(37,99,235,0.24)]">
             <span className="text-xl font-bold">C</span>
           </div>
         </div>
@@ -151,7 +151,7 @@ function Login() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-[400px]">
-        <div className="portal-panel py-8 px-6 sm:px-10">
+        <div className="portal-panel px-6 py-8 sm:px-10">
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             <div>
               <label htmlFor="email" className="portal-label">

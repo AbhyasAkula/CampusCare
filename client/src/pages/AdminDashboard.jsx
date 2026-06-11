@@ -59,7 +59,7 @@ function AdminDashboard() {
             <button
               key={m.id}
               onClick={() => navigate(m.nav)}
-              className="portal-panel p-5 text-left transition hover:border-primary hover:shadow-md"
+              className="enterprise-card"
             >
               <div className="flex items-start justify-between">
                 <p className="text-sm font-semibold text-brandText">{m.label}</p>
@@ -68,7 +68,7 @@ function AdminDashboard() {
               <p className="mt-3 text-3xl font-bold tracking-tight text-brandText">{m.value}</p>
               <div className="mt-1 flex items-center gap-1.5">
                 <span className={`text-xs font-semibold ${m.trendCls}`}>{m.value > 0 ? "Active" : "Clear"}</span>
-                <span className="text-xs text-brandText-muted">• {m.note}</span>
+                <span className="text-xs text-brandText-muted">/ {m.note}</span>
               </div>
             </button>
           ))}
@@ -90,7 +90,7 @@ function AdminDashboard() {
             <button
               key={item.nav}
               onClick={() => navigate(item.nav)}
-              className="portal-panel flex items-center gap-4 p-4 text-left transition hover:border-primary hover:shadow-md group"
+              className="enterprise-card group flex items-center gap-4 p-4"
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-brandText-muted group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                 {item.icon}
@@ -117,8 +117,14 @@ function AdminDashboard() {
         </div>
         <div className="portal-panel overflow-hidden">
           {recentComplaints.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-sm text-brandText-muted">No complaints yet.</p>
+            <div className="flex flex-col items-center justify-center px-6 py-14 text-center">
+              <div className="empty-state-icon">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </div>
+              <p className="mt-3 text-sm font-semibold text-brandText">No complaints yet</p>
+              <p className="mt-1 text-xs text-brandText-muted">Submitted tickets will appear here.</p>
             </div>
           ) : (
             <ul className="divide-y divide-brandBorder">

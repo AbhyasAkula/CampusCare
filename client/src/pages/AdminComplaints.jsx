@@ -83,8 +83,8 @@ function AdminComplaints() {
             key={metric.filter}
             type="button"
             onClick={() => setStatusFilter(metric.filter)}
-            className={`portal-panel p-4 text-left transition hover:border-primary hover:shadow-md ${
-              statusFilter === metric.filter ? "border-primary" : ""
+            className={`enterprise-card p-4 ${
+              statusFilter === metric.filter ? "border-primary bg-[#EFF6FF]" : ""
             }`}
           >
             <p className="text-xs font-semibold uppercase tracking-wider text-brandText-muted">{metric.label}</p>
@@ -122,7 +122,7 @@ function AdminComplaints() {
                 <tr>
                   <td colSpan="6" className="px-6 py-14">
                     <div className="mx-auto max-w-sm text-center">
-                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F1F5F9] text-brandText-muted">
+                      <div className="empty-state-icon">
                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>

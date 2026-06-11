@@ -101,7 +101,7 @@ function MyComplaints() {
         </div>
       ) : complaints.length === 0 ? (
         <div className="portal-panel flex flex-col items-center justify-center py-16 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+          <div className="empty-state-icon h-14 w-14">
             <svg className="h-7 w-7 text-brandText-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
@@ -114,12 +114,12 @@ function MyComplaints() {
         </div>
       ) : (
         <div className="portal-panel overflow-hidden">
-          <div className="border-b border-brandBorder bg-slate-50/50 px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center justify-between border-b border-brandBorder bg-[#F8FAFC] px-6 py-3">
             <p className="text-sm font-semibold text-brandText">{complaints.length} complaint{complaints.length !== 1 ? "s" : ""}</p>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-brandBorder text-left text-sm">
-              <thead className="bg-slate-50/50">
+              <thead className="bg-[#F8FAFC]">
                 <tr className="text-xs font-semibold uppercase tracking-wider text-brandText-muted">
                   <th className="px-6 py-3">Issue</th>
                   <th className="px-6 py-3">Status</th>
