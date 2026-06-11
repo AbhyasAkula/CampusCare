@@ -14,22 +14,30 @@ const { Server } = require("socket.io");
 
 connectDB();
 
+const PORT = process.env.PORT || 5000;
+const clientUrl = process.env.CLIENT_URL;
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    process.env.CLIENT_URL,
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+};
+
 // create http server
 const server = http.createServer(app);
 
 // attach socket.io
 const io = new Server(server, {
-  cors: {
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  },
+  cors: corsOptions,
 });
 
 // make io accessible in routes
 app.set("io", io);
 
 // middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // serve uploaded images
@@ -80,4 +88,4 @@ io.on("connection", (socket) => {
 
 /* ================= START SERVER ================= */
 
-server.listen(5000, () => console.log("Server running on port 5000"));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/axios";
+import { getUploadUrl } from "../utils/apiUrl";
 import socket from "../utils/socket";
 
 const STATUS_CONFIG = {
@@ -138,7 +139,7 @@ function MyComplaints() {
                         {complaint.image ? (
                           <div className="h-10 w-10 overflow-hidden rounded-lg border border-brandBorder bg-slate-50 shrink-0">
                             <img
-                              src={`http://localhost:5000/uploads/${complaint.image}`}
+                              src={getUploadUrl(complaint.image)}
                               alt={complaint.title}
                               className="h-full w-full object-cover"
                             />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/axios";
+import { getUploadUrl } from "../utils/apiUrl";
 import toast from "react-hot-toast";
 
 function Profile() {
@@ -93,7 +94,7 @@ function Profile() {
               <img
                 src={
                   user.profilePic
-                    ? `http://localhost:5000/uploads/${user.profilePic}`
+                    ? getUploadUrl(user.profilePic)
                     : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=EEF2FF&color=2563EB`
                 }
                 alt={`${user.name} profile`}

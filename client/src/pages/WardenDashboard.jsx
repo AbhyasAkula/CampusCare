@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../utils/axios";
+import { getUploadUrl } from "../utils/apiUrl";
 
 function WardenDashboard() {
   const [complaints, setComplaints] = useState([]);
@@ -219,7 +220,7 @@ function WardenDashboard() {
                         <div className="flex items-start gap-3">
                           {c.image ? (
                             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-brandBorder bg-[#F8FAFC]">
-                              <img src={`http://localhost:5000/uploads/${c.image}`} alt="complaint" className="h-full w-full object-cover" />
+                              <img src={getUploadUrl(c.image)} alt="complaint" className="h-full w-full object-cover" />
                             </div>
                           ) : (
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-brandBorder bg-[#F8FAFC] text-brandText-muted">

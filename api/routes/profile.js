@@ -79,7 +79,7 @@ router.put(
     try {
       const user = await User.findById(req.user.id);
 
-      user.profilePic = req.file.filename;
+      user.profilePic = req.file.path;
       await user.save();
 
       res.json({

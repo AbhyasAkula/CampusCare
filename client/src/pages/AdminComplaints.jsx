@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import API from "../utils/axios";
+import { getUploadUrl } from "../utils/apiUrl";
 
 function AdminComplaints() {
   const [complaints, setComplaints] = useState([]);
@@ -152,7 +153,7 @@ function AdminComplaints() {
                       {c.image ? (
                         <div className="h-10 w-10 overflow-hidden rounded-lg border border-brandBorder bg-[#F8FAFC]">
                           <img
-                            src={`http://localhost:5000/uploads/${c.image}`}
+                            src={getUploadUrl(c.image)}
                             alt="complaint"
                             className="h-full w-full object-cover"
                           />

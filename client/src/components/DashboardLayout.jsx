@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import API from "../utils/axios";
+import { getUploadUrl } from "../utils/apiUrl";
 import { disconnectSocket, initializeSocket } from "../utils/socketInit";
 
 function DashboardLayout() {
@@ -138,7 +139,7 @@ function DashboardLayout() {
                     className="flex items-center gap-2 rounded-full border border-transparent p-1 pr-2 transition hover:border-brandBorder hover:bg-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <img
-                    src={user.profilePic ? `http://localhost:5000/uploads/${user.profilePic}` : "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+                    src={user.profilePic ? getUploadUrl(user.profilePic) : "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
                     alt="profile"
                     className="h-8 w-8 rounded-full border border-brandBorder object-cover shadow-sm"
                   />
@@ -219,7 +220,7 @@ function DashboardLayout() {
             <div className="border-t border-brandBorder px-4 py-4">
               <div className="flex items-center gap-3">
                 <img
-                  src={user.profilePic ? `http://localhost:5000/uploads/${user.profilePic}` : "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+                  src={user.profilePic ? getUploadUrl(user.profilePic) : "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
                   alt="profile"
                   className="h-10 w-10 rounded-full border border-brandBorder object-cover"
                 />
